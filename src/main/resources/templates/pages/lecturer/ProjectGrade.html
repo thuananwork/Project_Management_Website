@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/lecturer/style.css}"/>
+    <!-- Favicon -->
+    <link href="img/icons8-admin-settings-male-16.png" rel="icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <aside>
+        <div class="navbar-top">
+            <div class="profile">
+                <div class="info active">
+                    <h2>Chào mừng, </h2>
+                    <p class="text-muted"
+                       th:text="${authen_user.firstName + ' ' + (authen_user.lastName == null ? '' : authen_user.lastName)}"></p>
+                </div>
+            </div>
+            <div class="btn-close">
+                <span class="material-symbols-outlined"> close </span>
+            </div>
+        </div>
+
+        <div class="navbar-content">
+            <a th:href="@{/lecturer}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Trang chủ</h3>
+            </a>
+            <a th:href="@{/lecturer/confirm}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xác nhận đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/create_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Tạo báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/list_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xem báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/evaluation}" >
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Báo cáo của sinh viên</h3>
+            </a>
+            <a th:href="@{/lecturer/projectGrade}" class="active">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Đánh giá đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/profile}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Thông tin cá nhân</h3>
+            </a>
+            <a href="/perform_logout" class="logout">
+                <span class="material-symbols-outlined"> Logout </span>
+                <h3>Đăng xuất</h3>
+            </a>
+        </div>
+    </aside>
+    <main>
+        <h1 class="main-title">Giảng viên</h1>
+        <div class="reports-section">
+            <h2>Đánh giá đồ án</h2>
+            <div id="gradingModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-btn" onclick="closeModal()">&times;</span>
+                    <h3>Chấm Điểm Đồ Án</h3>
+                    <form id="gradingForm" data-project-id="">
+                        <div class="form-group">
+                            <label for="grade">Điểm:</label>
+                            <input type="number" id="grade" name="grade" class="form-control" required min="0" max="10" step="0.01"
+                                   oninput="validateGradeInput(this)">
+                        </div>
+                        <div class="form-group">
+                            <label for="comments">Nhận xét:</label>
+                            <textarea id="comments" name="comments" rows="3" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-success">Gửi</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <table class="reports-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Đề Tài</th>
+                    <th>Yêu cầu</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Sinh viên thực hiện</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="projectGrade : ${projectGrades}">
+                    <td th:text="${projectGrade.id}"></td>
+                    <td th:text="${projectGrade.title}"></td>
+                    <td th:text="${projectGrade.description}"></td>
+                    <td th:text="${projectGrade.startDate}"></td>
+                    <td th:text="${projectGrade.endDate}"></td>
+                    <td th:text="${projectGrade.firstName + ' ' + projectGrade.lastName}"></td>
+                    <td>
+                        <button class="btn btn-warning" onclick="openGradingModal(this)"
+                                th:data-project-id="${projectGrade.id}">
+                            Chấm điểm
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${projectGrades.size() == 0}" class="no-data">
+                <p>Không có yêu cầu báo cáo nào</p>
+            </div>
+        </div>
+    </main>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    const statuses = document.querySelectorAll('.status')
+    statuses.forEach(status => {
+        if (status.innerText === 'Completed') {
+            status.style.color = '#41f1b6'
+        } else if (status.innerText === 'Waiting') {
+            status.style.color = '#eaa636'
+        } else {
+            status.style.color = '#fc515f'
+        }
+    });
+    function openGradingModal(button) {
+        const projectId = button.dataset.projectId; // Extract projectId
+        const modal = document.getElementById('gradingModal');
+
+        // Set the projectId in the form's dataset
+        document.getElementById('gradingForm').dataset.projectId = projectId;
+
+        // Show the modal
+        modal.style.display = 'block';
+    }
+    function validateGradeInput(input) {
+        const min = 0;
+        const max = 10;
+
+        // If the input is out of range, set it to the closest valid value
+        if (input.value < min) input.value = min;
+        if (input.value > max) input.value = max;
+    }
+
+    // Close the Grading Modal
+    function closeModal() {
+        const modal = document.getElementById('gradingModal');
+        modal.style.display = 'none';
+    }
+
+    // Submit the Form via Fetch API
+    document.getElementById('gradingForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const projectId = this.dataset.projectId;
+        const finalGrade = document.getElementById('grade').value;
+        const comments = document.getElementById('comments').value;
+
+        fetch('/lecturer/projectGrades', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `projectId=${projectId}&finalGrade=${finalGrade}&comments=${comments}`
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert('Chấm điểm thành công!');
+                closeModal();
+                location.reload(); // Reload the page
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi gửi dữ liệu.');
+            });
+    });
+
+    // Close Modal on Outside Click
+    window.onclick = function (event) {
+        const modal = document.getElementById('gradingModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
+</script>
+</body>
+</html>

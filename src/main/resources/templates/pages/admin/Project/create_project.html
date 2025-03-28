@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Thêm đồ án</title>
+    <link rel="stylesheet"
+          href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin/create_project.css}">
+    <link rel="icon" href="/image/p.png" type="image/x-icon">
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<div th:replace="/fragments/admin/sidebar :: sidebar"></div>
+</div>
+
+<div class="main-content">
+    <header>
+        <h2>
+            <label for="nav-toggle">
+                <span class="las la-bars"></span>
+            </label>
+            Dashboard
+        </h2>
+
+
+        <div class="user-wrapper">
+            <img src="/image/ico_account_gray.png" width="24px" height="24px" alt="">
+            <div>
+                <h4 th:text="${authen_user.firstName + ' ' + authen_user.lastName}">Dung Cao Quoc</h4>
+                <small th:text="${authen_user.role.roleName}"></small>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Form thêm/sửa đồ án -->
+            <form th:action="@{/admin/Project/create-project}"
+                  th:object="${project}"
+                  method="post"
+                  enctype="multipart/form-data">
+                <div class="form first">
+                    <div class="details personal">
+                        <span class="title" th:text="${project.projectId == null} ? 'Thêm đồ án' : 'Sửa đồ án'"></span>
+
+                        <div class="fields">
+                            <input type="hidden" th:field="*{projectId}" />
+
+                            <div class="input-field">
+                                <label>Tên đồ án</label>
+                                <input th:field="*{title}" id="title" type="text" placeholder="Tên đồ án" required>
+                            </div>
+
+                            <div class="input-field">
+                                <label>Ngày bắt đầu</label>
+                                <input id="startDate" th:field="*{startDate}" type="date" required>
+                            </div>
+
+                            <div class="input-field">
+                                <label>Ngày kết thúc</label>
+                                <input th:field="*{endDate}" id="endDate" type="date" required>
+                            </div>
+
+                            <div class="input-field">
+                                <label>Khoa</label>
+                                <input th:field="*{department}" type="text" placeholder="Nhập tên khoa" required>
+                            </div>
+
+                            <div class="input-field">
+                                <label>Số lượng tối đa sinh viên</label>
+                                <input th:field="*{maxStudents}" type="number" placeholder="Nhập số lượng tối đa" required>
+                            </div>
+
+                            <div class="input-field">
+                                <label>Files</label>
+                                <input type="file" id="fileInput" name="files" multiple/>
+                            </div>
+
+                            <div class="input-field">
+                                <label>Mô tả</label>
+                                <div id="description" contenteditable="true" class="raw-html-description"
+                                     style="border: 1px solid #e3d1d1; padding: 10px; min-height: 314px; max-height: 200px; overflow-y: auto;width: 1129px ">
+                                </div>
+                                <input type="hidden" name="description" id="descriptionHidden">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="details ID">
+                        <button type="submit" class="nextBtn">
+                            <span class="btnText">Lưu</span>
+                            <i class="uil uil-navigator"></i>
+                        </button>
+                        <img th:if="${success}" src="/image/success.png">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("fileInput");
+        const fileListContainer = document.getElementById("fileListContainer");
+
+        fileInput.addEventListener("change", function () {
+            fileListContainer.innerHTML = "";
+
+            const files = Array.from(fileInput.files);
+            if (files.length === 0) {
+                fileListContainer.innerHTML = "<p>Không có file nào được chọn</p>";
+                return;
+            }
+
+            files.forEach((file, index) => {
+                const listItem = document.createElement("div");
+                listItem.classList.add("file-item");
+                listItem.textContent = `File ${index + 1}: ${file.name}`;
+                fileListContainer.appendChild(listItem);
+            });
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+
+        form.addEventListener("submit", function (e) {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+
+            // Kiểm tra nếu startDate không được để trống
+            if (!startDateInput.value) {
+                alert("Ngày bắt đầu không được để trống!");
+                e.preventDefault();
+                return;
+            }
+
+            // Kiểm tra nếu endDate không được để trống
+            if (!endDateInput.value) {
+                alert("Ngày kết thúc không được để trống!");
+                e.preventDefault();
+                return;
+            }
+
+            // Kiểm tra nếu startDate lớn hơn hoặc bằng endDate
+            if (startDate >= endDate) {
+                alert("Ngày bắt đầu phải nhỏ hơn ngày kết thúc!");
+                e.preventDefault();
+            }
+
+            // Kiểm tra nếu khoảng cách giữa startDate và endDate > 30 ngày
+            const differenceInTime = endDate.getTime() - startDate.getTime();
+            const differenceInDays = differenceInTime / (1000 * 3600 * 24); // Chuyển đổi sang ngày
+            if (differenceInDays <= 30) {
+                alert("Khoảng cách giữa ngày bắt đầu và ngày kết thúc phải lớn hơn 30 ngày!");
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+<!-- JQUERY -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<div th:fragment="headermain" xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+    <div id="headerMin">
+        <div id="mastHead" role="banner">
+            <!-- Logo -->
+            <a href="/">
+                <img title="HUTECH Logo" alt="Logo" th:src="@{/image/photo_2024-12-19_01-26-03.jpg}"
+                     style="position: relative; z-index: 1000; max-width: 100%; height: auto; margin: 0 auto;">
+            </a>
+            <div id="mastLogin">
+                <div id="loginLinks">
+                    <div class="fhs_center_space" style="padding-left: 24px;">
+                        <div class="noti-top fhs_dropdown_hover no_cover"
+                             th:onmouseover="|openMenu(1,'.top-notification-menu')|"
+                             th:onmouseout="|openMenu(0,'.top-notification-menu')|">
+                            <div style="margin-right: 50px;"
+                                 class="top-notification-button fhs_mouse_point">
+                                <a style="cursor:pointer;display:flex;flex-direction: column;" th:href="@{/user/account/notify}">
+                                    <div class="fhs_center_center" style="margin-bottom:3px;">
+                                        <div class="icon_nofi_gray">
+                                            <div class="top-notification-button-unseen top_menu_unseen fhs_center_center"
+                                                 th:style="${session.list_notification.isEmpty()}?'display:none'"
+                                                 th:text="${!session.list_notification.isEmpty()}?${session.list_notification.size()}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fhs_top_center">
+                                        <div class="top_menu_label">Thông Báo</div>
+                                    </div>
+                                </a>
+                                <div style="clear: both;"></div>
+                            </div>
+                            <div id="top-notification-menu-render">
+                                <div class="top-notification-menu fhs_top_noti_dropdown fhs_dropdown "
+                                     style="display: none;" sec:authorize="!isAuthenticated()">
+                                    <div style="padding:16px;border-bottom: 1px solid #F2F4F5; font-weight: bold;"
+                                         class="fhs_center_space">
+                                        <div class="fhs_center_left" style="font-size: 1.23em; color: #0D0E0F;">
+                                        <span class="icon_nofi_black"
+                                              style="width:16px;height:16px;margin-right: 8px;"></span>
+                                            <span>Thông báo</span>
+                                            <span class="fhs_notification_unseen" style="margin-left:4px;"></span>
+                                        </div>
+                                    </div>
+                                    <div class="fhs_center_center" style="padding: 24px;"><span
+                                            class="ico_notlogin"></span>
+                                    </div>
+                                    <div class="fhs_center_center" style="color: #0D0E0F; font-size: 1.23em;">Vui lòng
+                                        đăng
+                                        nhập để
+                                    </div>
+                                    <div class="fhs_center_center"
+                                         style="color: #0D0E0F; padding-bottom:24px; font-size: 1.23em;">xem thông báo
+                                    </div>
+                                    <div style="padding:0 16px 8px 16px; ">
+                                        <button type="button" title="Đăng nhập" onclick="window.location.href='/login'"
+                                                class="fhs_btn_default active" style="height: 40px;"><span>Đăng
+                                            nhập</span></button>
+                                    </div>
+                                    <div style="padding:0 16px 16px 16px;">
+                                        <button type="button" title="Đăng ký" onclick="window.location.href='/signup'"
+                                                class="fhs_btn_default" style="height: 40px;"><span>Đăng ký</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="top-notification-menu fhs_top_noti_dropdown fhs_dropdown "
+                                     style="display: none;" sec:authorize="isAuthenticated()">
+                                    <div style="padding:16px;border-bottom: 1px solid #F2F4F5; font-weight: bold;"
+                                         class="fhs_center_space">
+                                        <div class="fhs_center_left" style="font-size: 1.23em; color: #0D0E0F;">
+                                        <span class="icon_nofi_black"
+                                              style="width:16px;height:16px;margin-right: 8px;"></span>
+                                            <span>Thông báo</span>
+                                            <span class="fhs_notification_unseen" style="margin-left:4px;"
+                                                  th:text="${session.list_notification.size()}"></span>
+                                        </div>
+                                        <a th:href="@{/user/account/notify}" class="fhs_center_left"
+                                           style="color: #2489F4; font-size: 1.1em;">Xem tất cả</a>
+                                    </div>
+                                    <div class="top-notification-loading fhs_center_center"
+                                         style="padding: 16px; display: none;">
+                                        <div class="ico_loading_cirle"></div>
+                                    </div>
+                                    <div class="top-notification-list fhs_scrollbar" style="display: block;"
+                                         th:each="i : ${session.list_notification}">
+                                        <a class="top-notification-item fhs_column_left fhs_mouse_point clear"
+                                           th:href="@{/user/account/notify}">
+                                            <div class="fhs_top_stretch" style="width:100%;">
+                                                <div class="fhs_top_left" style="margin-right:12px;">
+                                                    <div class="ico_noti_bill"></div>
+                                                </div>
+                                                <div class="fhs_column_stretch"
+                                                     style="width:calc(100% - 44px); text-align: left;">
+                                                    <div class="fhs_top_left fhs_nowrap_one" style="font-weight:bold;"
+                                                         th:text="${i.title}">
+                                                    </div>
+                                                    <div class="fhs_top_left fhs_nowrap_two" th:text="${i.description}">
+                                                    </div>
+                                                    <div style="color:#7A7E7F;"></div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="top-notification-footer" style="height: 16px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fhs_top_account no_cover fhs_dropdown_hover" id="fhs_top_account_hover"
+                             th:onmouseover="|openMenu(1,'.fhs_top_account_dropdown')|"
+                             th:onmouseout="|openMenu(0,'.fhs_top_account_dropdown')|"
+                             style="margin-right: 40px;">
+                            <a>
+                                <div class="fhs_top_account_button">
+                                    <div class="icon_account_gray" style="margin-bottom:3px;"></div>
+                                    <div sec:authorize="isAuthenticated()"
+                                         th:text="${authen_user.firstName + ' ' + (authen_user.lastName == null ? '' : authen_user.lastName)}"
+                                         class="top_menu_label fhs_top_center fhs_nowrap_one"
+                                         id="fhs_top_account_title1">
+                                    </div>
+                                    <div th:if="${authen_user == null}"
+                                         class="top_menu_label fhs_top_center fhs_nowrap_one"
+                                         id="fhs_top_account_title">Tài
+                                        khoản
+                                    </div>
+                                </div>
+                            </a>
+                            <div sec:authorize="isAuthenticated()"
+                                 class="fhs_top_account_dropdown fhs_dropdown right min"
+                                 style="display: none;">
+                                <div><a class="fhs_center_space" th:href="@{/user/account/profile}">
+                                    <div class="fhs_center_left">
+                                        <div class="fhs_center_left ico_vip_copper" style="margin-right:8px"></div>
+                                        <div>
+                                            <div class="fhs_center_left fhs_nowrap_one"
+                                                 style="font-size: 1.23em; color: #0D0E0F; font-weight: bold;max-width: 200px;height: 22px; text-transform: capitalize;">
+                                                <span th:text="${authen_user.firstName + ' ' + (authen_user.lastName == null ? '' : authen_user.lastName)}"></span>
+                                            </div>
+                                            <div class="fhs_center_left" style="height: 22px;">Student</div>
+                                        </div>
+                                    </div>
+                                    <div class="icon_seemore_gray right" style="width:24px;height:24px;"></div>
+                                </a></div>
+                                <div style="border-top: 1px solid #F2F4F5;"><a class="fhs_center_left"
+                                                                               href="/user/account/profile"><span
+                                        class="icon_bill_gray"
+                                        style="margin-right:8px;"></span><span>Thông tin cá nhân</span></a></div>
+                                <div style="border-top: 1px solid #F2F4F5;"><a class="fhs_center_left"
+                                                                               th:href="@{/user/account/history}"><span
+                                        class="icon_bill_gray"
+                                        style="margin-right:8px;"></span><span>Đồ án của tôi</span></a></div>
+                                <div style="border-top: 1px solid #F2F4F5;"><a class="fhs_center_left"
+                                                                               th:href="@{/user/account/weekly}"><span
+                                        class="icon_bill_gray"
+                                        style="margin-right:8px;"></span><span>Tiến độ đồ án</span></a></div>
+                                <div style="border-top: 1px solid #F2F4F5;"><a class="fhs_center_left"
+                                                                               th:href="@{/user/evaluation}"><span
+                                        class="icon_bill_gray"
+                                        style="margin-right:8px;"></span><span>Điểm</span></a></div>
+                                <div class="fhs_center_left fhs_mouse_point" style="border-top: 1px solid #F2F4F5;"><a
+                                        class="fhs_center_left fhs_flex_grow" href="/perform_logout"><span
+                                        class="ico_logout_gray"
+                                        style="margin-right:8px;"></span><span>Thoát tài khoản</span></a></div>
+                            </div>
+                        </div>
+                        <div class="fhs_top_account no_cover fhs_dropdown_hover" id="fhs_top_account_hover2">
+                            <div class="fhs_top_account_button">
+                                <div class="icon_account_gray1" style="margin-bottom:5px; margin-left: 15px;" th:href="@{/perform_logout}"></div>
+                                <div class="top_menu_label fhs_top_center fhs_nowrap_one"
+                                     id="fhs_top_account_title2">
+                                    <a href="/perform_logout" title="Thoát " id="loginLink2" style="margin-right: 10px; font-family: 'Roboto', sans-serif">Thoát</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    function openMenu(show, menuSelector) {
+        const menu = document.querySelector(menuSelector);
+        if (menu) {
+            menu.style.display = show ? 'block' : 'none';
+        }
+    }
+</script>
+</div>
+

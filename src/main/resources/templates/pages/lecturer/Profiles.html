@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Details</title>
+    <link rel="stylesheet" th:href="@{/css/lecturer/style.css}">
+    <!-- Favicon -->
+    <link href="img/icons8-admin-settings-male-16.png" rel="icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!--    <link href="/css/profile.css" type="text/css" rel="stylesheet" media="all">-->
+    <script type="text/javascript">
+        var sakaiPortalWindow = "";
+        $(document).ready(function () {
+            setupSkipNav();
+        });
+
+        function togglePasswordFields(show) {
+            const passwordFields = document.querySelector('.password-fields');
+            passwordFields.style.display = show ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <aside>
+        <div class="navbar-top">
+            <div class="profile">
+                <div class="info">
+                    <h2>Chào mừng, </h2>
+                    <p class="text-muted"
+                       th:text="${authen_user.firstName + ' ' + (authen_user.lastName == null ? '' : authen_user.lastName)}"></p>
+                </div>
+            </div>
+            <div class="btn-close">
+                <span class="material-symbols-outlined"> close </span>
+            </div>
+        </div>
+
+        <div class="navbar-content">
+            <a th:href="@{/lecturer}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Trang chủ</h3>
+            </a>
+            <a th:href="@{/lecturer/confirm}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xác nhận đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/create_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Tạo báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/list_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xem báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/evaluation}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Báo cáo của sinh viên</h3>
+            </a>
+            <a th:href="@{/lecturer/projectGrade}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Đánh giá đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/projectGrade}" class="active">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Thông tin cá nhân</h3>
+            </a>
+            <a href="/perform_logout" class="logout">
+                <span class="material-symbols-outlined"> Logout </span>
+                <h3>Đăng xuất</h3>
+            </a>
+        </div>
+    </aside>
+    <main>
+        <div class="form-container">
+            <h2>Thông tin tài khoản</h2>
+            <form action="/lecturer/profile" method="post">
+            <input type="hidden" name="id" th:value="${user?.id}">
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="lastname">Họ*</label>
+                    <input type="text"
+                           id="lastname"
+                           name="lastname"
+                           th:value="${user?.lastName}"
+                           placeholder="Nhập họ" required>
+                </div>
+                <div class="form-group">
+                    <label for="firstname">Tên*</label>
+                    <input type="text"
+                           id="firstname"
+                           name="firstname"
+                           th:value="${user?.firstName}"
+                           placeholder="Nhập tên" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="telephone">Số điện thoại</label>
+                <input type="text"
+                       id="telephone"
+                       name="telephone"
+                       th:value="${user?.phoneNumber}"
+                       placeholder="Nhập số điện thoại">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email*</label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       th:value="${#authentication.getName()}"
+                       placeholder="Nhập email" readonly>
+            </div>
+
+            <div class="form-group">
+                <div style="margin-left: 6px;">
+                    <label class="fhs-radio" style="margin-top: 2px;">Nam <input
+                            type="radio" class="gender-radio"
+                            name="gender-radio"
+                            th:if="${user.gender}"
+                            value="male"
+                            checked
+
+                    >
+                        <input
+                                type="radio" class="gender-radio"
+                                name="gender-radio"
+                                th:if="${!user.gender}"
+                                value="male"
+
+                        >
+                    </label>
+
+                </div>
+                <div style="margin-left: 22px;">
+                    <label class="fhs-radio" style="margin-top: 2px;">Nữ
+                        <input
+                            type="radio" class="gender-radio"
+                            name="gender-radio"
+                            th:if="${!user.gender}"
+                            value="female"
+                            checked>
+                        <input
+                                type="radio" class="gender-radio"
+                                name="gender-radio"
+                                th:if="${user.gender}"
+                                value="female">
+                    </label>
+
+                </div>
+            </div>
+
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="day">Ngày sinh*</label>
+                    <input type="text"
+                           id="day" name="day"
+                           th:value="${day}"
+                           placeholder="DD" maxlength="2" required>
+                </div>
+                <div class="form-group">
+                    <label for="month">Tháng sinh*</label>
+                    <input type="text" id="month"
+                           name="month" placeholder="MM"
+                           th:value="${month}"
+                           maxlength="2" required>
+                </div>
+                <div class="form-group">
+                    <label for="year">Năm sinh*</label>
+                    <input type="text" id="year"
+                           name="year" placeholder="YYYY"
+                           th:value="${year}"
+                           maxlength="4" required>
+                </div>
+            </div>
+
+            <div class="form-group-row">
+                <div class="form-group">
+                <label for="code">Mã giảng viên*</label>
+                <input type="text" id="code"
+                       th:value="${user?.code}"
+                       name="code" placeholder="Nhập mã sinh viên" required>
+                </div>
+                <div class="form-group">
+                    <label for="department">Khoa*</label>
+                    <input type="text" id="department"
+                           th:value="${user?.department}"
+                           name="department" placeholder="Nhập khoa" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="margin-left: 36px;">
+                    <input type="checkbox"
+                           name="change_password"
+                           id="change_password"
+                           onclick="changepass()"
+                           value="1">
+                    Đổi mật khẩu</label>
+            </div>
+
+            <div class="fhs-edit-account-password-form" style="display:none;">
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="current_password">Mật khẩu hiện tại*</label>
+                        <input type="password" id="current_password" name="current_password"
+                               placeholder="Nhập mật khẩu hiện tại">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mật khẩu mới*</label>
+                        <input type="password" id="password"
+                               name="password" placeholder="Nhập mật khẩu mới">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmation">Xác nhận mật khẩu mới*</label>
+                        <input type="password" name="confirmation"
+                               id="confirmation" placeholder="Xác nhận mật khẩu mới">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button"
+                        title="Lưu thay đổi"
+                        id="btn-save-account-info"
+                        onclick="this.form.submit()"
+                        class="btn-primary">Lưu thay đổi
+                </button>
+            </div>
+        </form>
+        </div>
+    </main>
+</div>
+
+<script>
+    function changepass() {
+        var i = $(".fhs-edit-account-password-form").css('display');
+        console.log(i)
+        if (i === "none") {
+            $(".fhs-edit-account-password-form").show();
+        } else {
+            $(".fhs-edit-account-password-form").hide();
+        }
+    }
+</script>
+</body>
+</html>

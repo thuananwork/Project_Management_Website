@@ -1,0 +1,706 @@
+create table chatbox
+(
+    id        bigint auto_increment
+        primary key,
+    nick_name varchar(80)       null,
+    message   varchar(3000)     null,
+    created   varchar(17)       null,
+    types     tinyint default 1 null
+);
+
+create table config_history
+(
+    id         int auto_increment
+        primary key,
+    nick_name  varchar(120)  null,
+    created    datetime      null,
+    action     varchar(255)  null,
+    input_data varchar(4000) null,
+    ip         varchar(50)   null
+);
+
+create table hu_game_bai
+(
+    id       int auto_increment
+        primary key,
+    pot_name varchar(45) charset utf8 null,
+    value    bigint                   null
+)
+    collate = utf8_unicode_ci;
+
+create table key_value
+(
+    `key`      varchar(45) charset utf8 not null
+        primary key,
+    value      int                      null,
+    updated_at date                     null
+)
+    collate = utf8_unicode_ci;
+
+create table lucky_rotation
+(
+    id            int auto_increment
+        primary key,
+    user_id       int                      not null,
+    nick_name     varchar(45) charset utf8 not null,
+    rotate_daily  int default 0            null,
+    rotate_free   int default 0            null,
+    rotate_in_day int default 0            null,
+    login_date    date                     null,
+    rotate_time   datetime                 null,
+    constraint nickname_UNIQUE
+        unique (nick_name),
+    constraint user_id_UNIQUE
+        unique (user_id)
+)
+    collate = utf8_unicode_ci;
+
+create index login_date_index
+    on lucky_rotation (login_date);
+
+create index nickname_index
+    on lucky_rotation (nick_name);
+
+create index user_id_index
+    on lucky_rotation (user_id);
+
+create table lucky_rotation_ip_block
+(
+    id                int auto_increment
+        primary key,
+    ip_address        varchar(45) charset utf8 not null,
+    rotate_win_in_day int default 0            null,
+    rotate_date       date                     null,
+    constraint ip_address_UNIQUE
+        unique (ip_address)
+)
+    collate = utf8_unicode_ci;
+
+create table minigame_funds
+(
+    id        int auto_increment
+        primary key,
+    fund_name varchar(45) charset utf8 null,
+    value     bigint                   null
+)
+    collate = utf8_unicode_ci;
+
+create table minigame_pots
+(
+    id       int auto_increment
+        primary key,
+    pot_name varchar(45) charset utf8 not null,
+    value    bigint                   null
+)
+    collate = utf8_unicode_ci;
+
+create table `references`
+(
+    id      int auto_increment,
+    game_id int    not null,
+    value   bigint not null,
+    primary key (id, game_id, value)
+)
+    collate = utf8_unicode_ci;
+
+create table result_tai_xiu
+(
+    id               int auto_increment
+        primary key,
+    reference_id     bigint                              null,
+    result           tinyint                             null,
+    dice1            tinyint                             null,
+    dice2            tinyint                             null,
+    dice3            tinyint                             null,
+    total_tai        bigint                              null,
+    total_xiu        bigint                              null,
+    num_bet_tai      int                                 null,
+    num_bet_xiu      int                                 null,
+    total_prize      bigint                              null,
+    total_refund_tai bigint                              null,
+    total_refund_xiu bigint                              null,
+    total_revenue    bigint                              null,
+    money_type       tinyint                             null,
+    timestamp        timestamp default CURRENT_TIMESTAMP null,
+    total_jackpot    bigint    default 0                 null
+)
+    collate = utf8_unicode_ci;
+
+create index money_type_index
+    on result_tai_xiu (money_type);
+
+create index reference_index
+    on result_tai_xiu (reference_id);
+
+create index timestamp_index
+    on result_tai_xiu (timestamp);
+
+create table result_tai_xiu_md5
+(
+    id               int auto_increment
+        primary key,
+    reference_id     bigint                              null,
+    result           tinyint                             null,
+    dice1            tinyint                             null,
+    dice2            tinyint                             null,
+    dice3            tinyint                             null,
+    total_tai        bigint                              null,
+    total_xiu        bigint                              null,
+    num_bet_tai      int                                 null,
+    num_bet_xiu      int                                 null,
+    total_prize      bigint                              null,
+    total_refund_tai bigint                              null,
+    total_refund_xiu bigint                              null,
+    total_revenue    bigint                              null,
+    money_type       tinyint                             null,
+    timestamp        timestamp default CURRENT_TIMESTAMP null,
+    before_md5       varchar(255)                        null,
+    md5              varchar(255)                        null
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create index money_type_index
+    on result_tai_xiu_md5 (money_type);
+
+create index reference_index
+    on result_tai_xiu_md5 (reference_id);
+
+create index timestamp_index
+    on result_tai_xiu_md5 (timestamp);
+
+create table rotate_slot_free
+(
+    user_id     int                      not null,
+    nick_name   varchar(45) charset utf8 not null,
+    game_name   varchar(45) charset utf8 not null,
+    room        int default 100          not null,
+    rotate_free int default 0            null,
+    max_winning int                      null,
+    update_time timestamp                null,
+    primary key (user_id, nick_name, game_name, room)
+)
+    collate = utf8_unicode_ci;
+
+create table taixiu
+(
+    id            bigint(38) auto_increment
+        primary key,
+    opentime      datetime(6) null,
+    endtime       datetime(6) null,
+    status        tinyint(1)  null,
+    result        varchar(15) null,
+    result_amount bigint(22)  null,
+    twin          bigint(22)  null
+);
+
+create table taixiu_record
+(
+    id           bigint(38) auto_increment
+        primary key,
+    taixiu_id    bigint(38)           null,
+    user_id      bigint(38)           null,
+    betamount    bigint(28)           null,
+    winamount    bigint(28) default 0 null,
+    typed        tinyint(1)           null,
+    status       tinyint(1)           null,
+    bettime      datetime(6)          null,
+    result       varchar(10)          null,
+    description  varchar(120)         null,
+    refundamount bigint(28) default 0 null,
+    ip           varchar(30)          null,
+    updatedate   datetime             null,
+    usertype     tinyint(2)           null,
+    nick_name    varchar(90)          null
+);
+
+create index taixiu_record_nickname
+    on taixiu_record (nick_name);
+
+create index taixiu_record_taixiu_id
+    on taixiu_record (taixiu_id);
+
+create table thanh_du
+(
+    id             int auto_increment
+        primary key,
+    user_name      varchar(45) charset utf8            null,
+    number         int       default 1                 null,
+    total_betting  bigint                              null,
+    last_reference bigint                              null,
+    `references`   varchar(512) charset utf8           null,
+    last_update    timestamp default CURRENT_TIMESTAMP null,
+    type           tinyint                             null
+)
+    collate = utf8_unicode_ci;
+
+create index last_update_index
+    on thanh_du (last_update);
+
+create index type_index
+    on thanh_du (type);
+
+create index update_index
+    on thanh_du (user_name, last_update, type);
+
+create index username_index
+    on thanh_du (user_name);
+
+create table transaction_detail_tai_xiu
+(
+    id               int auto_increment
+        primary key,
+    reference_id     bigint                              null,
+    transaction_code varchar(120) charset utf8           null,
+    user_id          int                                 null,
+    user_name        varchar(45) charset utf8            null,
+    bet_value        bigint                              null,
+    bet_side         tinyint                             null,
+    prize            bigint                              null,
+    refund           bigint                              null,
+    input_time       int                                 null,
+    money_type       tinyint                             null,
+    timestamp        timestamp default CURRENT_TIMESTAMP null,
+    jackpot          bigint    default 0                 null
+)
+    collate = utf8_unicode_ci;
+
+create index reference_index
+    on transaction_detail_tai_xiu (reference_id);
+
+create index timestampt_index
+    on transaction_detail_tai_xiu (timestamp);
+
+create index user_name_index
+    on transaction_detail_tai_xiu (user_name);
+
+create table transaction_detail_tai_xiu_md5
+(
+    id               int auto_increment
+        primary key,
+    reference_id     bigint                              null,
+    transaction_code varchar(120) charset utf8           null,
+    user_id          int                                 null,
+    user_name        varchar(45) charset utf8            null,
+    bet_value        bigint                              null,
+    bet_side         tinyint                             null,
+    prize            bigint                              null,
+    refund           bigint                              null,
+    input_time       int                                 null,
+    money_type       tinyint                             null,
+    timestamp        timestamp default CURRENT_TIMESTAMP null,
+    jackpot          bigint    default 0                 null
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create index reference_index
+    on transaction_detail_tai_xiu_md5 (reference_id);
+
+create index timestampt_index
+    on transaction_detail_tai_xiu_md5 (timestamp);
+
+create index user_name_index
+    on transaction_detail_tai_xiu_md5 (user_name);
+
+create table transaction_tai_xiu
+(
+    id             int auto_increment
+        primary key,
+    reference_id   bigint                              null,
+    user_id        int                                 null,
+    user_name      varchar(45) charset utf8            null,
+    bet_value      bigint                              null,
+    bet_side       tinyint                             null,
+    total_prize    bigint                              null,
+    total_refund   bigint                              null,
+    total_exchange bigint    default 0                 null,
+    money_type     tinyint                             null,
+    timestamp      timestamp default CURRENT_TIMESTAMP null,
+    total_jackpot  bigint    default 0                 null
+)
+    collate = utf8_unicode_ci;
+
+create index money_type_index
+    on transaction_tai_xiu (money_type);
+
+create index reference_index
+    on transaction_tai_xiu (reference_id);
+
+create index timestamp_index
+    on transaction_tai_xiu (timestamp);
+
+create index user_name_index
+    on transaction_tai_xiu (user_name);
+
+create table transaction_tai_xiu_md5
+(
+    id             int auto_increment
+        primary key,
+    reference_id   bigint                              null,
+    user_id        int                                 null,
+    user_name      varchar(45) charset utf8            null,
+    bet_value      bigint                              null,
+    bet_side       tinyint                             null,
+    total_prize    bigint                              null,
+    total_refund   bigint                              null,
+    total_exchange bigint    default 0                 null,
+    money_type     tinyint                             null,
+    timestamp      timestamp default CURRENT_TIMESTAMP null,
+    total_jackpot  bigint    default 0                 null
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create index money_type_index
+    on transaction_tai_xiu_md5 (money_type);
+
+create index reference_index
+    on transaction_tai_xiu_md5 (reference_id);
+
+create index timestamp_index
+    on transaction_tai_xiu_md5 (timestamp);
+
+create index user_name_index
+    on transaction_tai_xiu_md5 (user_name);
+
+create table tx_rank
+(
+    id        bigint(38) auto_increment
+        primary key,
+    nick_name varchar(80)       null,
+    amount    bigint            null,
+    type      tinyint default 1 null
+);
+
+create table user_rut_loc
+(
+    id          int auto_increment
+        primary key,
+    user_name   varchar(45) charset utf8            null,
+    so_lan_rut  int                                 null,
+    last_update timestamp default CURRENT_TIMESTAMP null,
+    constraint user_name_UNIQUE
+        unique (user_name)
+)
+    collate = utf8_unicode_ci;
+
+create definer = root@`%` view users_bot as
+select `vinplay`.`users`.`nick_name` AS `nick_name`
+from `vinplay`.`users`
+where (`vinplay`.`users`.`is_bot` = (1 collate utf8_unicode_ci));
+
+create
+    definer = root@`%` procedure cong_tien_hu_game_bai(IN p_pot_name varchar(45), IN p_value_pot bigint,
+                                                       IN p_value_pot_system bigint)
+BEGIN
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+  DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+  START TRANSACTION;
+    UPDATE hu_game_bai SET `value` = p_value_pot WHERE `pot_name` = p_pot_name;
+    UPDATE hu_game_bai SET `value` = p_value_pot_system WHERE `pot_name` = 'Vinplay';
+    COMMIT;
+END;
+
+create
+    definer = root@`%` procedure lucky_get_rotate_count(IN p_user_id int, IN p_ip_address varchar(45),
+                                                        OUT i_rotate_daily int, OUT i_rotate_free int,
+                                                        OUT i_rotate_in_day int, OUT i_rotate_by_ip int)
+BEGIN
+  DECLARE p_login_date DATE;
+    SET i_rotate_free = (SELECT rotate_free FROM lucky_rotation WHERE user_id = p_user_id);
+    SET i_rotate_daily = (SELECT rotate_daily FROM lucky_rotation WHERE user_id = p_user_id AND login_date = CURDATE());
+    SET i_rotate_in_day = (SELECT rotate_in_day FROM lucky_rotation WHERE user_id = p_user_id AND (rotate_time is null OR (rotate_time is not null AND DATE(rotate_time) = CURDATE())));
+    SET i_rotate_by_ip = (SELECT rotate_win_in_day FROM lucky_rotation_ip_block WHERE ip_address = p_ip_address AND rotate_date = CURDATE());
+END;
+
+create
+    definer = root@`%` procedure lucky_receive_rotate_daily(IN p_user_id int, IN p_nick_name varchar(45), OUT i_rotate_count int)
+BEGIN
+  DECLARE cnt INT(11);
+    DECLARE p_login_date DATE;
+    SET cnt = (SELECT COUNT(1) FROM lucky_rotation WHERE user_id = p_user_id);
+  IF cnt = 0 THEN 
+    INSERT INTO lucky_rotation(`user_id`,`nick_name`,`rotate_daily`,`rotate_free`,`rotate_in_day`,`login_date`)
+    VALUES (p_user_id, p_nick_name, 2, 0, 0, CURDATE());
+  ELSE
+    SET p_login_date = (SELECT login_date FROM lucky_rotation WHERE user_id = p_user_id);
+    IF (p_login_date <> CURDATE()) THEN 
+      UPDATE lucky_rotation SET rotate_daily = 1, login_date = CURDATE() WHERE user_id = p_user_id;
+    END IF;
+  END IF;
+    SET i_rotate_count = (SELECT rotate_daily + rotate_free FROM lucky_rotation WHERE user_id = p_user_id);
+END;
+
+create
+    definer = root@`%` procedure no_hu_game_bai(IN p_session_id varchar(100), IN p_user_id int, IN p_money_use bigint,
+                                                IN p_money_total bigint, IN p_money_freeze bigint,
+                                                IN p_money_pot bigint, IN p_pot_name varchar(45))
+BEGIN
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+  DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+  START TRANSACTION;
+    UPDATE vinplay.users SET vin = p_money_use, vin_total = p_money_total WHERE id = p_user_id;
+        UPDATE hu_game_bai SET `value` = p_money_pot WHERE `pot_name` = p_pot_name;   
+    IF (p_money_freeze > -1) THEN
+      UPDATE vinplay.freeze_money SET money = p_money_freeze WHERE session_id = p_session_id;
+    END IF;
+  COMMIT;
+END;
+
+create
+    definer = root@`%` procedure save_result_lucky(IN p_user_id int, IN p_nick_name varchar(45),
+                                                   IN p_ip_address varchar(45), IN p_rotate_daily int,
+                                                   IN p_rotate_free int, IN p_rotate_in_day int, IN p_rotate_by_ip int,
+                                                   IN p_slot_free int, IN p_slot_name varchar(45),
+                                                   IN p_slot_max_win int, IN p_slot_room int)
+BEGIN
+  DECLARE cnt INT(11);
+  UPDATE lucky_rotation SET rotate_daily = p_rotate_daily, rotate_free = p_rotate_free, rotate_in_day = p_rotate_in_day, rotate_time= NOW() WHERE user_id = p_user_id;
+    IF p_rotate_by_ip > 0 THEN
+    INSERT INTO lucky_rotation_ip_block(`ip_address`,`rotate_win_in_day`,`rotate_date`) VALUES (p_ip_address, p_rotate_by_ip, CURDATE()) ON DUPLICATE KEY UPDATE rotate_win_in_day = p_rotate_by_ip, rotate_date = CURDATE();
+    END IF;
+    IF p_slot_free > 0 THEN
+    SET cnt = (SELECT COUNT(1) FROM rotate_slot_free WHERE user_id = p_user_id AND game_name = p_slot_name COLLATE utf8_unicode_ci AND room = p_slot_room AND DATE(update_time) = CURDATE());
+        IF cnt = 0 THEN
+      INSERT INTO rotate_slot_free(`user_id`,`nick_name`,`game_name`,`room`,`rotate_free`, `max_winning`, `update_time`) VALUES(p_user_id, p_nick_name COLLATE utf8_unicode_ci, p_slot_name COLLATE utf8_unicode_ci, p_slot_room, p_slot_free, p_slot_max_win, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE rotate_free = p_slot_free, update_time = CURRENT_TIMESTAMP;
+    ELSE 
+      UPDATE rotate_slot_free SET rotate_free = rotate_free + p_slot_free, update_time = CURRENT_TIMESTAMP WHERE user_id = p_user_id AND game_name = p_slot_name COLLATE utf8_unicode_ci AND room = p_slot_room;
+        END IF;
+  END IF;   
+END;
+
+create
+    definer = root@`%` procedure save_result_tai_xiu(IN reference_id bigint, IN result int, IN dice1 tinyint,
+                                                     IN dice2 tinyint, IN dice3 tinyint, IN total_tai bigint,
+                                                     IN total_xiu bigint, IN num_bet_tai int, IN num_bet_xiu int,
+                                                     IN total_prize bigint, IN total_refund_tai bigint,
+                                                     IN total_refund_xiu bigint, IN total_revenue bigint,
+                                                     IN money_type tinyint, IN total_jackpot bigint)
+BEGIN
+  INSERT INTO result_tai_xiu (`reference_id`, `result`, `dice1`, `dice2`, `dice3`, `total_tai`, `total_xiu`, `num_bet_tai`, `num_bet_xiu`, `total_prize`, `total_refund_tai`, `total_refund_xiu`, `total_revenue`, `money_type`, `total_jackpot`) 
+    VALUES(reference_id, result, dice1, dice2, dice3, total_tai, total_xiu, num_bet_tai,  num_bet_xiu, total_prize, total_refund_tai, total_refund_xiu, total_revenue, money_type,total_jackpot);
+END;
+
+create
+    definer = root@`%` procedure save_result_tai_xiu_md5(IN reference_id bigint, IN result int, IN dice1 tinyint,
+                                                         IN dice2 tinyint, IN dice3 tinyint, IN total_tai bigint,
+                                                         IN total_xiu bigint, IN num_bet_tai int, IN num_bet_xiu int,
+                                                         IN total_prize bigint, IN total_refund_tai bigint,
+                                                         IN total_refund_xiu bigint, IN total_revenue bigint,
+                                                         IN money_type tinyint, IN before_md5 varchar(255),
+                                                         IN md5 varchar(255))
+BEGIN
+  INSERT INTO result_tai_xiu_md5 (reference_id, result, dice1, dice2, dice3, total_tai, total_xiu, num_bet_tai, num_bet_xiu, total_prize, total_refund_tai, total_refund_xiu, total_revenue, money_type, before_md5, md5) 
+    VALUES(reference_id, result, dice1, dice2, dice3, total_tai, total_xiu, num_bet_tai,  num_bet_xiu, total_prize, total_refund_tai, total_refund_xiu, total_revenue, money_type, before_md5, md5);
+END;
+
+create
+    definer = root@`%` procedure save_transaction_detail_tai_xiu(IN reference_id bigint,
+                                                                 IN transaction_code varchar(45), IN user_id int,
+                                                                 IN user_name varchar(45), IN bet_value bigint,
+                                                                 IN bet_side tinyint, IN prize bigint, IN refund bigint,
+                                                                 IN input_time int, IN money_type tinyint,
+                                                                 IN jackpot bigint)
+BEGIN
+  
+  INSERT INTO `transaction_detail_tai_xiu` (`reference_id`, `transaction_code`, `user_id`, `user_name`, `bet_value`, `bet_side`, `prize`, `refund`, `input_time`, `money_type`, `jackpot`  )
+    VALUES(reference_id, transaction_code, user_id, user_name, bet_value, bet_side, prize, refund, input_time, money_type,jackpot);
+END;
+
+create
+    definer = root@`%` procedure save_transaction_detail_tai_xiu_md5(IN reference_id bigint,
+                                                                     IN transaction_code varchar(45), IN user_id int,
+                                                                     IN user_name varchar(45), IN bet_value bigint,
+                                                                     IN bet_side tinyint, IN prize bigint,
+                                                                     IN refund bigint, IN input_time int,
+                                                                     IN money_type tinyint)
+BEGIN
+  
+  INSERT INTO transaction_detail_tai_xiu_md5 (reference_id, transaction_code, user_id, user_name, bet_value, bet_side, prize, refund, input_time, money_type  )
+    VALUES(reference_id, transaction_code, user_id, user_name, bet_value, bet_side, prize, refund, input_time, money_type);
+END;
+
+create
+    definer = root@`%` procedure save_transaction_tai_xiu(IN reference_id bigint, IN user_id int,
+                                                          IN user_name varchar(45), IN bet_value bigint,
+                                                          IN bet_side tinyint, IN total_prize bigint,
+                                                          IN total_refund bigint, IN money_type tinyint,
+                                                          IN total_jackpot bigint)
+BEGIN
+  DECLARE total_exchange BIGINT;
+    IF (total_prize > 0) THEN
+    IF (money_type = 1) THEN
+      SET total_exchange = total_prize * 96 / 196;
+        ELSE
+      SET total_exchange = total_prize * 95 / 195;
+        END IF;
+    ELSE 
+    SET total_exchange = -(bet_value - total_refund);
+    END IF;
+  INSERT INTO transaction_tai_xiu (`reference_id`, `user_id`, `user_name`, `bet_value`, `bet_side`, `total_prize`, `total_refund`, `total_exchange`, `money_type` ,`total_jackpot`) 
+    VALUES(reference_id, user_id, user_name, bet_value, bet_side, total_prize, total_refund, total_exchange, money_type ,total_jackpot);
+END;
+
+create
+    definer = root@`%` procedure save_transaction_tai_xiu_md5(IN reference_id bigint, IN user_id int,
+                                                              IN user_name varchar(45), IN bet_value bigint,
+                                                              IN bet_side tinyint, IN total_prize bigint,
+                                                              IN total_refund bigint, IN money_type tinyint,
+                                                              IN total_jackpot bigint)
+BEGIN
+  DECLARE total_exchange BIGINT;
+    IF (total_prize > 0) THEN
+    IF (money_type = 1) THEN
+      SET total_exchange = total_prize * 96 / 196;
+        ELSE
+      SET total_exchange = total_prize * 95 / 195;
+        END IF;
+    ELSE 
+    SET total_exchange = -(bet_value - total_refund);
+    END IF;
+  INSERT INTO transaction_tai_xiu_md5 (reference_id, user_id, user_name, bet_value, bet_side, total_prize, total_refund, total_exchange, money_type ,total_jackpot) 
+    VALUES(reference_id, user_id, user_name, bet_value, bet_side, total_prize, total_refund, total_exchange, money_type ,total_jackpot);
+END;
+
+create
+    definer = root@`%` procedure tx_count_lich_su_giao_dich(IN nickname varchar(45), IN money_type tinyint, OUT total_records int)
+BEGIN
+  SELECT count(*) INTO total_records FROM transaction_tai_xiu
+    WHERE user_name = nickname AND transaction_tai_xiu.money_type = money_type;
+END;
+
+create
+    definer = root@`%` procedure tx_get_chi_tiet_phien(IN reference_id bigint, IN money_type tinyint)
+BEGIN
+  SELECT * FROM transaction_detail_tai_xiu
+    WHERE transaction_detail_tai_xiu.reference_id = reference_id AND transaction_detail_tai_xiu.money_type = money_type
+    ORDER BY `timestamp` ASC;
+END;
+
+create
+    definer = root@`%` procedure tx_get_chi_tiet_phien_md5(IN reference_id bigint, IN money_type tinyint)
+BEGIN
+  SELECT * FROM transaction_detail_tai_xiu_md5
+    WHERE transaction_detail_tai_xiu_md5.reference_id = reference_id AND transaction_detail_tai_xiu_md5.money_type = money_type
+    ORDER BY `timestamp` ASC;
+END;
+
+create
+    definer = root@`%` procedure tx_get_lich_su_giao_dich(IN nickname varchar(45), IN page_number int, IN money_type tinyint)
+BEGIN
+  declare num_start int;
+    declare num_end int;
+    set num_start = (page_number - 1) * 10;
+    set num_end = page_number * 10;
+    SELECT tran_tx.reference_id, tran_tx.user_id, tran_tx.user_name, tran_tx.bet_value, tran_tx.bet_side,
+    tran_tx.total_prize, tran_tx.total_refund, tran_tx.`timestamp`, result_tx.dice1, result_tx.dice2, result_tx.dice3
+    FROM
+  (SELECT * FROM transaction_tai_xiu
+    WHERE user_name = nickname AND transaction_tai_xiu.money_type = money_type
+    ORDER BY id DESC
+    LIMIT num_start, num_end) as tran_tx
+    INNER JOIN 
+    (SELECT * FROM result_tai_xiu WHERE result_tai_xiu.money_type = money_type) as result_tx
+    ON tran_tx.reference_id = result_tx.reference_id
+    ORDER BY tran_tx.reference_id DESC
+    LIMIT 0, 10;
+END;
+
+create
+    definer = root@`%` procedure tx_get_top_thanh_du(IN start_time varchar(45), IN end_time varchar(45),
+                                                     IN in_type tinyint)
+BEGIN
+  SELECT * FROM thanh_du
+    WHERE start_time <= thanh_du.last_update AND thanh_du.last_update <= end_time AND thanh_du.`type` = in_type
+    ORDER BY thanh_du.`number` DESC, thanh_du.total_betting DESC, thanh_du.last_update ASC
+    LIMIT 0,10;
+END;
+
+create
+    definer = root@`%` procedure tx_get_top_win(IN money_type tinyint)
+BEGIN
+  SET @min_id_today = (SELECT `value` FROM key_value WHERE updated_at = CURDATE() AND `key` = CONCAT('taixiu_', money_type));
+    IF ISNULL(@min_id_today) THEN
+    UPDATE key_value SET `value` = (SELECT min(id) FROM transaction_tai_xiu WHERE `timestamp` >= CURDATE() 
+        AND transaction_tai_xiu.money_type = money_type), updated_at = CURDATE() WHERE `key` = CONCAT('taixiu_', money_type);
+        SET @min_id_today = (SELECT `value` FROM key_value WHERE updated_at = CURDATE() AND `key` = CONCAT('taixiu_', money_type));
+  END IF;
+    
+  SELECT user_name, SUM(total_exchange) as money
+    FROM transaction_tai_xiu
+    WHERE id >= @min_id_today AND transaction_tai_xiu.money_type = money_type
+    GROUP BY user_name
+    HAVING sum(total_exchange) > 0
+    ORDER BY money DESC
+    LIMIT 0, 20;
+END;
+
+create
+    definer = root@`%` procedure tx_get_top_win_md5(IN money_type tinyint)
+BEGIN
+--   SET @min_id_today = (SELECT `value` FROM key_value WHERE updated_at = CURDATE() AND `key` = CONCAT('taixiu_', money_type));
+--     IF ISNULL(@min_id_today) THEN
+--     UPDATE key_value SET `value` = (SELECT min(id) FROM transaction_tai_xiu_md5 WHERE `timestamp` >= CURDATE() 
+--         AND transaction_tai_xiu_md5.money_type = money_type), updated_at = CURDATE() WHERE `key` = CONCAT('taixiu_', money_type);
+--         SET @min_id_today = (SELECT `value` FROM key_value WHERE updated_at = CURDATE() AND `key` = CONCAT('taixiu_', money_type));
+--   END IF;
+	
+	SET @min_id_today = (SELECT min(id) FROM transaction_tai_xiu_md5 WHERE `timestamp` >= CURDATE());
+    
+  SELECT user_name, SUM(total_exchange) as money
+    FROM transaction_tai_xiu_md5
+    WHERE id >= @min_id_today AND transaction_tai_xiu_md5.money_type = money_type
+    GROUP BY user_name
+    HAVING sum(total_exchange) > 0
+    ORDER BY money DESC
+    LIMIT 0, 20;
+END;
+
+create
+    definer = root@`%` procedure tx_update_thanh_du(IN user_name varchar(45), IN in_number int, IN total_betting bigint,
+                                                    IN current_reference_id bigint, IN in_references varchar(512),
+                                                    IN in_type tinyint)
+BEGIN
+  IF (SELECT 1=1 FROM thanh_du 
+    WHERE thanh_du.user_name = user_name AND thanh_du.type = in_type AND thanh_du.`last_update` >= CURDATE()) THEN
+        BEGIN
+      UPDATE thanh_du SET thanh_du.`number` = in_number, thanh_du.total_betting = total_betting, 
+            thanh_du.last_reference = current_reference_id, thanh_du.`references` = in_references
+            WHERE thanh_du.user_name = user_name AND thanh_du.type = in_type AND thanh_du.`last_update` >= CURDATE();
+        END;
+  ELSE
+    BEGIN
+      INSERT INTO thanh_du(`user_name`, `number`, `total_betting`, `last_reference`, `references`, `last_update`, `type`)
+            VALUES(user_name, in_number, total_betting, current_reference_id, in_references, CURRENT_TIMESTAMP(), in_type);
+        END;
+  END IF;
+END;
+
+create
+    definer = root@`%` procedure update_fund(IN fund_name varchar(45), IN new_value bigint)
+BEGIN
+  UPDATE minigame_funds SET minigame_funds.`value` = new_value WHERE minigame_funds.`fund_name` = fund_name;
+END;
+
+create
+    definer = root@`%` procedure update_luot_rut_loc(IN user_name varchar(45), IN luot_rut int)
+BEGIN
+  INSERT INTO user_rut_loc(`user_name`, `so_lan_rut`) VALUES (user_name, luot_rut)
+    ON DUPLICATE KEY 
+  UPDATE user_rut_loc.so_lan_rut = user_rut_loc.so_lan_rut + luot_rut, user_rut_loc.last_update = CURRENT_TIMESTAMP();
+END;
+
+create
+    definer = root@`%` procedure update_pot(IN pot_name varchar(45), IN new_value bigint)
+BEGIN
+  UPDATE minigame_pots SET `value` = new_value WHERE minigame_pots.`pot_name` = pot_name;
+END;
+
+create
+    definer = root@`%` procedure update_transaction_tai_xiu_detail(IN in_transaction_code varchar(45), IN prize bigint, IN refund bigint)
+BEGIN
+  UPDATE transaction_detail_tai_xiu SET `prize` = prize, `refund` = refund
+    WHERE `transaction_code` = in_transaction_code;
+END;
+

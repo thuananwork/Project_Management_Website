@@ -1,0 +1,179 @@
+create table game_tour_info
+(
+    `key`       varchar(100)                        not null
+        primary key,
+    value       varchar(1000) charset utf8          not null,
+    create_time timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    update_time timestamp                           null
+)
+    collate = utf8_unicode_ci;
+
+create table game_tour_jackpot
+(
+    `key`       varchar(100)                        not null
+        primary key,
+    value       bigint    default 0                 not null,
+    create_time timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create table game_tour_mark
+(
+    nick_name   varchar(100)                            not null,
+    game_name   varchar(45)                             not null,
+    tour_id     varchar(45)                             not null,
+    fee         int                                     not null,
+    start_time  timestamp default CURRENT_TIMESTAMP     not null on update CURRENT_TIMESTAMP,
+    mark        int       default 0                     not null,
+    top         int       default 0                     not null,
+    user_total  int       default 0                     not null,
+    status      int       default 0                     not null,
+    prize       varchar(45)                             null,
+    create_time timestamp default '0000-00-00 00:00:00' not null,
+    update_time timestamp                               null,
+    primary key (nick_name, game_name, tour_id)
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create table game_tour_vip
+(
+    nick_name   varchar(100) charset utf8           not null,
+    game_name   varchar(45)                         not null,
+    vip_tour_id varchar(45) charset utf8            not null,
+    value       varchar(1000) charset utf8          null,
+    create_time timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    update_time timestamp                           null,
+    primary key (nick_name, vip_tour_id, game_name)
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create table poker_free_ticket
+(
+    id             int auto_increment
+        primary key,
+    nick_name      varchar(45)      not null,
+    ticket         int default 0    not null,
+    tour_type      int default 0    not null,
+    used           bit default b'0' not null,
+    create_time    timestamp        null,
+    available_time timestamp        null,
+    limit_time     timestamp        null,
+    use_time       timestamp        null,
+    create_type    int              not null,
+    add_info       varchar(45)      null,
+    is_bot         bit default b'0' not null,
+    tour_id        int default 0    not null
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create table poker_tour
+(
+    id                    int auto_increment
+        primary key,
+    start_time_schedule   timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    end_register_schedule timestamp                           null,
+    tour_state            int       default 0                 not null,
+    tour_type             int       default 0                 not null,
+    start_time            timestamp                           null,
+    end_register_time     timestamp                           null,
+    cancel_time           timestamp                           null,
+    end_time              timestamp                           null,
+    level                 int       default 0                 not null,
+    ticket                int       default 0                 not null,
+    count_time_up_level   int       default 0                 not null,
+    fund                  bigint    default 0                 not null
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create table poker_tour_user
+(
+    tour_id        int                      not null,
+    nick_name      varchar(50) charset utf8 not null,
+    current_chip   bigint default 0         not null,
+    ticket_count   int    default 0         not null,
+    out_tour_count int    default 0         not null,
+    out_tour_time  bigint default 0         not null,
+    last_chip      bigint default 0         not null,
+    `rank`         int    default 0         not null,
+    mark           int    default 0         not null,
+    prize          int    default 0         not null,
+    primary key (tour_id, nick_name)
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create table xoc_dia_boss
+(
+    session_id   varchar(100)               not null
+        primary key,
+    nick_name    varchar(45)                not null,
+    room_id      int                        not null,
+    room_setting varchar(1000) charset utf8 not null,
+    fund_initial bigint                     not null,
+    status       int                        not null,
+    create_time  datetime                   not null,
+    update_time  datetime                   null,
+    fee          int    default 0           not null,
+    revenue      bigint default 0           not null
+)
+    collate = utf8_unicode_ci
+    row_format = DYNAMIC;
+
+create
+    definer = root@`%` procedure save_tour_info(IN p_key varchar(100), IN p_value varchar(1000))
+BEGIN
+  INSERT INTO game_tour_info(`key`, `value`, `create_time`) 
+    VALUES (p_key COLLATE utf8_unicode_ci, p_value, now()) ON DUPLICATE KEY UPDATE `value` = p_value, update_time = now();
+END;
+
+create
+    definer = root@`%` procedure save_tour_jackpot(IN p_key varchar(100), IN p_value bigint)
+BEGIN
+  INSERT INTO game_tour_jackpot(`key`, `value`, `create_time`) 
+    VALUES (p_key COLLATE utf8_unicode_ci, p_value, now()) ON DUPLICATE KEY UPDATE `value` = `value` + p_value;
+END;
+
+create
+    definer = root@`%` procedure save_tour_mark(IN p_nn varchar(100), IN p_gn varchar(100), IN p_tid varchar(100),
+                                                IN p_f int, IN p_st varchar(100), IN p_m int, IN p_t int, IN p_ut int,
+                                                IN p_sts int, IN p_pr varchar(100))
+BEGIN
+  INSERT INTO game_tour_mark(`nick_name`, `game_name`, `tour_id`, `fee`, `start_time`, `mark`, `top`, `user_total`, `status`, `prize`,`create_time`) 
+    VALUES (p_nn COLLATE utf8_unicode_ci, p_gn COLLATE utf8_unicode_ci, p_tid COLLATE utf8_unicode_ci, p_f, p_st, p_m, p_t, p_ut, p_sts, p_pr, now()) 
+    ON DUPLICATE KEY UPDATE `mark` = `mark` + p_m, `top` = p_t, `user_total` = p_ut, `status` = p_sts, `prize` = p_pr, update_time = now();
+END;
+
+create
+    definer = root@`%` procedure save_tour_vip(IN p_nn varchar(100), IN p_gn varchar(100), IN p_tid varchar(100),
+                                               IN p_value varchar(1000))
+BEGIN
+  INSERT INTO game_tour_vip(`nick_name`, `game_name`, `vip_tour_id`, `value`, `create_time`) 
+    VALUES (p_nn COLLATE utf8_unicode_ci, p_gn COLLATE utf8_unicode_ci, p_tid COLLATE utf8_unicode_ci, p_value, now());
+END;
+
+create
+    definer = root@`%` procedure save_xd_boss(IN p_sid varchar(100), IN p_nn varchar(100), IN p_rid int,
+                                              IN p_rs varchar(500), IN p_fi bigint)
+BEGIN
+  INSERT INTO xoc_dia_boss(`session_id`, `nick_name`, `room_id`, `room_setting`, `fund_initial`, `status`, `create_time`) 
+    VALUES (p_sid COLLATE utf8_unicode_ci, p_nn, p_rid, p_rs, p_fi, 1, now());
+END;
+
+create
+    definer = root@`%` procedure update_xd_boss(IN p_sid varchar(100), IN p_nn varchar(100), IN p_fi bigint,
+                                                IN p_fee int, IN p_rv bigint, IN p_type int)
+BEGIN 
+  IF p_type = 1 THEN 
+    UPDATE xoc_dia_boss SET `fee`= `fee` + p_fee, fund_initial = p_fi, `revenue`= `revenue` + p_rv, update_time = now() WHERE session_id = p_sid COLLATE utf8_unicode_ci AND nick_name = p_nn COLLATE utf8_unicode_ci AND `status` = 1;
+  ELSEIF p_type = 2 THEN 
+    UPDATE xoc_dia_boss SET `fee`= `fee` + p_fee, `status`= 0, `revenue`= `revenue` + p_rv, update_time = now() WHERE session_id = p_sid COLLATE utf8_unicode_ci AND nick_name = p_nn COLLATE utf8_unicode_ci AND `status` = 1;
+  ELSEIF p_type = 3 THEN 
+    UPDATE xoc_dia_boss SET `fee`= `fee` + p_fee, `revenue`= `revenue` + p_rv, update_time = now() WHERE session_id = p_sid COLLATE utf8_unicode_ci AND nick_name = p_nn COLLATE utf8_unicode_ci;
+    END IF; 
+END;
+

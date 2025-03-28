@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/lecturer/style.css}"/>
+    <!-- Favicon -->
+    <link href="img/icons8-admin-settings-male-16.png" rel="icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <aside>
+        <div class="navbar-top">
+            <div class="profile">
+                <div class="info active">
+                    <h2>Chào mừng, </h2>
+                    <p class="text-muted"
+                       th:text="${authen_user.firstName + ' ' + (authen_user.lastName == null ? '' : authen_user.lastName)}"></p>
+                </div>
+            </div>
+            <div class="btn-close">
+                <span class="material-symbols-outlined"> close </span>
+            </div>
+        </div>
+
+        <div class="navbar-content">
+            <a th:href="@{/lecturer}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Trang chủ</h3>
+            </a>
+            <a th:href="@{/lecturer/confirm}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xác nhận đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/create_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Tạo báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/list_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xem báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/evaluation}" class="active">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Báo cáo của sinh viên</h3>
+            </a>
+            <a th:href="@{/lecturer/projectGrade}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Đánh giá đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/profile}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Thông tin cá nhân</h3>
+            </a>
+            <a href="/perform_logout" class="logout">
+                <span class="material-symbols-outlined"> Logout </span>
+                <h3>Đăng xuất</h3>
+            </a>
+        </div>
+    </aside>
+    <main>
+        <div class="report-container">
+            <h1 class="report-title">Báo cáo theo tuần của sinh viên</h1>
+
+            <!-- Tabs -->
+            <div class="report-tabs">
+                <th:block th:each="week : ${weekNumber}">
+                    <button th:class="'report-tab-btn ' + (${week == 1} ? 'active' : '')"
+                            th:onclick="'openReportTab(event, \'week' + ${week} + '\')'">
+                        Tuần [[${week}]]
+                    </button>
+                </th:block>
+            </div>
+
+            <!-- Nội dung Tab -->
+            <th:block th:each="week : ${weekNumber}">
+                <div th:id="'week' + ${week}" class="report-tab-content" th:classappend="${week == 1} ? 'active'">
+                    <h2>Báo cáo Tuần [[${week}]]</h2>
+                    <table class="report-table">
+                        <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Đề Tài</th>
+                            <th>Ngày Nộp</th>
+                            <th>Nhận Xét</th>
+                            <th>Sinh Viên</th>
+                            <th>File</th>
+                            <th>Điểm</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="evaluation, iterStat : ${evaluations}" th:if="${evaluation.week_number == week}">
+                            <td th:text="${iterStat.count}"></td>
+                            <td th:text="${evaluation.title}"></td>
+                            <td th:text="${#dates.format(evaluation.subDate, 'dd-MM-yyyy')}"></td>
+                            <td th:text="${evaluation.comments}"></td>
+                            <td th:text="${evaluation.firstName + ' ' + evaluation.lastName}"></td>
+                            <td>
+                                <a th:href="@{'/lecturer/reports/download/' + ${evaluation.file}}">Tải xuống</a>
+                            </td>
+                            <td th:text="${evaluation.weekly_report_grade != null ? evaluation.weekly_report_grade : 'Chưa chấm'}"></td>
+                            <td th:if="${evaluation.weekly_report_grade == null}">
+                                <button onclick="openGradingModal(this)" th:data-report-id="${evaluation.id}" class="report-btn-primary">Chấm điểm</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </th:block>
+        </div>
+
+        <!-- Modal for Grading -->
+        <div id="gradingModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <h3>Chấm Điểm</h3>
+                <form id="gradingForm" data-report-id="">
+                    <div>
+                        <label for="grade">Điểm:</label>
+                        <input type="number" id="grade" name="grade" required min="0" max="10" step="0.1">
+                    </div>
+                    <div>
+                        <label for="feedback">Nhận xét:</label>
+                        <textarea id="feedback" name="feedback" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Gửi</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    const statuses = document.querySelectorAll('.status')
+    statuses.forEach(status => {
+        if (status.innerText === 'Completed') {
+            status.style.color = '#41f1b6'
+        } else if (status.innerText === 'Waiting') {
+            status.style.color = '#eaa636'
+        } else {
+            status.style.color = '#fc515f'
+        }
+    });
+    function openReportTab(evt, tabId) {
+        // Ẩn tất cả nội dung tab
+        document.querySelectorAll('.report-tab-content').forEach(tab => tab.classList.remove('active'));
+        // Bỏ class active khỏi tất cả các button
+        document.querySelectorAll('.report-tab-btn').forEach(btn => btn.classList.remove('active'));
+        // Hiển thị tab được chọn và thêm class active
+        document.getElementById(tabId).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    // Kích hoạt tab mặc định
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector('.report-tab-btn').click();
+    });
+
+    function openGradingModal(button) {
+        const reportId = button.getAttribute("data-report-id");
+        const modal = document.getElementById("gradingModal");
+        document.getElementById("gradingForm").dataset.reportId = reportId;
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("gradingModal").style.display = "none";
+    }
+
+    document.getElementById('gradingForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const reportId = this.dataset.reportId;
+        const grade = document.getElementById('grade').value;
+        const feedback = document.getElementById('feedback').value;
+
+        fetch('/lecturer/grade', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `reportId=${reportId}&grade=${grade}&feedback=${feedback}`
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert('Chấm điểm thành công!');
+                closeModal();
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Lỗi khi chấm điểm.');
+            });
+    });
+
+    // Default tab open
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector('.tab-button').click();
+    });
+</script>
+</body>
+</html>

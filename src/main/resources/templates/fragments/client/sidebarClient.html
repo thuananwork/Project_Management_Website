@@ -1,0 +1,60 @@
+<div th:fragment="sidebarClient" xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+    <div class="divColor" id="toolMenuWrap">
+        <div id="worksiteLogo">
+        </div>
+        <h1 class="skip" id="totoolmenu">Công cụ bắt đầu ở đây </h1>
+        <div id="toolMenu" role="navigation" aria-label="Công cụ bắt đầu ở đây ">
+            <ul>
+                <li class="selectedTool">
+                    <a class="toolMenuLink " title="Trang Chủ"
+                       href="/"
+                       role="presentation">
+                        <span class="toolMenuIcon icon-sakai-iframe "> </span><span class="menuTitle">Trang
+                                        Chủ</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="toolMenuLink "
+                       aria-disabled="true"
+                       href="/project_registrations"
+                       title="Để truy cập vào một trang web bên ngoài trong trang web ">
+                        <span class="toolMenuIcon icon-sakai-iframe "></span><span class="menuTitle"> Đăng ký đồ án</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="toolMenuLink "
+                       href="/user/account/profile"
+                       title="For resetting guest user passwords">
+                        <span class="toolMenuIcon icon-sakai-resetpass "></span><span class="menuTitle">Thông tin cá nhân</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="toolMenuLink "
+                       href="/user/account/history"
+                       title="Để truy cập vào một trang web bên ngoài trong trang web ">
+                        <span class="toolMenuIcon icon-sakai-iframe "></span><span class="menuTitle">Đồ án của tôi</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="toolMenuLink "
+                       href="/user/account/weekly"
+                       title="Để truy cập vào một trang web bên ngoài trong trang web ">
+                        <span class="toolMenuIcon icon-sakai-iframe "></span><span class="menuTitle">Tiến độ</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="toolMenuLink" accesskey="6"
+                       href="http://e-graduate.hutech.edu.vn/portal/help/main" target="_blank" onclick="openWindow('http://e-graduate.hutech.edu.vn/portal/help/main',
+									'Help', 'resizable=yes,toolbar=no,scrollbars=yes,menubar=yes,width=1024,height=768');
+									return false" title="Trợ giúp">
+                        <span class="toolMenuIcon icon-sakai-help"> </span><span class="menuTitle">Trợ
+                                        giúp</span>
+                        <span class="skip">Sẽ mở trong một cửa sổ mới </span> </a>
+
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>

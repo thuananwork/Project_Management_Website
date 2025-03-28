@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/lecturer/style.css}"/>
+    <!-- Favicon -->
+    <link href="img/icons8-admin-settings-male-16.png" rel="icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <aside>
+        <div class="navbar-top">
+            <div class="profile">
+                <div class="info active">
+                    <h2>Chào mừng, </h2>
+                    <p class="text-muted"
+                       th:text="${authen_user.firstName + ' ' + (authen_user.lastName == null ? '' : authen_user.lastName)}"></p>
+                </div>
+            </div>
+            <div class="btn-close">
+                <span class="material-symbols-outlined"> close </span>
+            </div>
+        </div>
+
+        <div class="navbar-content">
+            <a th:href="@{/lecturer}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Trang chủ</h3>
+            </a>
+            <a th:href="@{/lecturer/confirm}" class="active">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xác nhận đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/create_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Tạo báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/list_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xem báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/evaluation}" >
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Báo cáo của sinh viên</h3>
+            </a>
+            <a th:href="@{/lecturer/projectGrade}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Đánh giá đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/profile}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Thông tin cá nhân</h3>
+            </a>
+            <a href="/perform_logout" class="logout">
+                <span class="material-symbols-outlined"> Logout </span>
+                <h3>Đăng xuất</h3>
+            </a>
+        </div>
+    </aside>
+    <main>
+        <h1 class="main-title">Giảng viên</h1>
+        <div class="reports-section">
+            <h2>Xác nhận đồ án</h2>
+            <table class="reports-table">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Đề Tài</th>
+                    <th>Yêu cầu</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Sinh viên thực hiện</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="project : ${projects}">
+                    <td th:text="${project.id}"></td>
+                    <td th:text="${project.title}"></td>
+                    <td th:text="${project.description}"></td>
+                    <td th:text="${#dates.format(project.startDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${#dates.format(project.endDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${project.firstName + ' ' + project.lastName}"></td>
+                    <td>
+                        <button class="btn btn-warning" onclick="confirmProject(this)"
+                                th:data-project-id="${project.id}">
+                            Xác nhận
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${projects.size() == 0}" class="no-data">
+                <p>Không có yêu cầu báo cáo nào</p>
+            </div>
+        </div>
+    </main>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    const statuses = document.querySelectorAll('.status')
+    statuses.forEach(status => {
+        if (status.innerText === 'Completed') {
+            status.style.color = '#41f1b6'
+        } else if (status.innerText === 'Waiting') {
+            status.style.color = '#eaa636'
+        } else {
+            status.style.color = '#fc515f'
+        }
+    });
+
+    function confirmProject(button) {
+        const projectId = button.getAttribute("data-project-id");
+
+        // Gửi yêu cầu POST để xác nhận project
+        fetch('/lecturer/regisConfirm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `projectId=${projectId}`
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data); // Hiển thị thông báo thành công
+                location.reload(); // Reload lại trang để cập nhật trạng thái
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra, không thể xác nhận project');
+            });
+    }
+
+    // Đóng modal khi nhấn ngoài vùng modal
+    window.onclick = function(event) {
+        const modal = document.getElementById('gradingModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

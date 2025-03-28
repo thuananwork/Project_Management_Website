@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{client-layout}">
+<th:block layout:fragment="content">
+    <th:block layout:insert="~{fragments/client/header}"/>
+    <th:block>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Student Home</title>
+            <!-- Bootstrap CSS -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f8f9fa;
+                }
+
+                #mastLogo img, #mastBanner img {
+                    max-height: 60px;
+                }
+
+                .content-wrapper {
+                    display: flex;
+                    align-items: flex-start;
+                    justify-content: flex-start;
+                    gap: 20px;
+                    padding: 20px;
+                }
+
+                .sidebar {
+                    width: 293px;
+                    background-color: #f1f1f1;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    padding: 10px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    flex-shrink: 0;
+                }
+
+                .sidebar a {
+                    display: block;
+                    padding: 8px 10px;
+                    text-decoration: none;
+                    color: #333;
+                    font-size: 0.9rem;
+                    border-radius: 3px;
+                    transition: background-color 0.3s ease;
+                }
+
+                .sidebar a:hover,
+                .sidebar a.active {
+                    background-color: #b5f6cb;
+                    color: #333;
+                }
+                .main-content {
+                    background-color: #fff;
+                    border-radius: 1px;
+                    padding: 20px;
+                    flex-grow: 1;
+                    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+                }
+                /* Footer */
+                #footer {
+                    background-color: #f1f1f1;
+                    text-align: center;
+                    padding: 10px 0;
+                    position: fixed;
+                    bottom: 0;
+                    width: 100%;
+                }
+
+                .full-width-bg {
+                    background-color: #e9ecef;
+                    width: 100%;
+                    margin: 0;
+                }
+
+                .container {
+                    max-width: 1200px;
+                }
+
+                .table-responsive {
+                    width: 100%;
+                    background-color: #ffffff;
+                }
+
+                /* Thông báo góc phải */
+                .notification {
+                    background-color: #28a745; /* Màu xanh mặc định */
+                    color: #f1ae42; /* Màu chữ */
+                    padding: 15px 20px;
+                    margin-top: 10px;
+                    border-radius: 5px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    animation: fadeOut 3s forwards;
+                }
+
+                .notification.error {
+                    background-color: #dc3545; /* Màu đỏ cho lỗi */
+                }
+
+                .notification.success {
+                    background-color: #28a745; /* Màu xanh cho thành công */
+                }
+
+                @keyframes fadeOut {
+                    0% { opacity: 1; }
+                    90% { opacity: 1; }
+                    100% { opacity: 0; }
+                }
+
+
+            </style>
+        </head>
+        <body>
+        <div class="content-wrapper">
+            <!-- Sidebar -->
+            <div class="sidebar" style="margin-top: 27px;margin-left: 29px;">
+                <a href="/home">Trang Chủ</a>
+                <a href="/project_registrations" class="active">Đăng ký đồ án</a>
+                <a href="#">Hướng dẫn</a>
+                <a href="#">Trợ Giúp</a>
+            </div>
+            <div id="toast-container" style="position: fixed; top: 100px; right: 20px; z-index: 9999;">
+                <div id="notification" class="notification" th:if="${error != null or success != null}">
+                    <p id="notificationMessage"
+                       th:text="${error != null ? error : success}"
+                       th:classappend="${error != null ? 'error' : 'success'}"
+                       style="padding: 10px 20px; color: white; background-color: #B0DE78  ;  border-radius: 5px; font-weight: bold;">
+                    </p>
+                </div>
+            </div>
+            <div class="main-content" style="margin-top: 8px">
+                <div class="full-width-bg">
+                    <div class="container">
+                        <h2 class="text-center mb-4">Danh Sách Đăng Ký Đồ Án</h2>
+                        <div class="table-responsive bg-white p-4 rounded shadow">
+                            <table class="table table-striped table-bordered text-center mb-0">
+                                <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên đề tài</th>
+                                    <th>Mô tả</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="registration : ${projects}">
+                                    <td th:text="${registration.projectId}"></td>
+                                    <td th:text="${registration.title}"></td>
+                                    <td th:text="${registration.description}"></td>
+                                    <td>
+                                        <a class="btn btn-primary"
+                                           onclick="return confirmRegistration();"
+                                           th:href="@{'/register?id=' + ${registration.projectId}}"
+                                        >Đăng ký</a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(projects)}">
+                                    <td colspan="5" class="text-center text-muted">Không có dữ liệu</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Footer -->
+            <div id="footer">
+                <p>Hệ Thống Đào Tạo Qua Mạng - Trường Đại Học Công Nghệ TP.HCM</p>
+                <p>E-LEARNING HUTECH</p>
+            </div>
+            <!-- Bootstrap JS -->
+        <script type="text/javascript">
+            function confirmRegistration() {
+                return confirm("Khi đăng ký sẽ không đổi lại đề tài được. Bạn muốn đăng ký đồ án không?");
+                // const isConfirmed = confirm("Khi đăng ký sẽ không đổi lại đề tài được. Bạn muốn đăng ký đồ án không?");
+                // if (isConfirmed) {
+                //     document.getElementById('registerForm').submit();
+                // }
+            }
+            document.addEventListener("DOMContentLoaded", function () {
+                const notification = document.getElementById('notification');
+                if (notification) {
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                    }, 5000);
+                }
+            });
+
+        </script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
+    </th:block>
+</th:block>
+</html>

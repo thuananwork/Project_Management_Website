@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar</title>
+    <link rel="stylesheet" th:href="@{/css/admin/sidebar.css}">
+</head>
+<body>
+<div class="sidebar" th:fragment="sidebar">
+    <div class="sidebar-brand" style="margin-bottom: 30px">
+        <img style="width: 240px; height: auto; object-fit: cover; border-radius: 8px; margin-top: 10px"
+             th:src="@{/image/photo_2024-12-19_01-26-03.jpg}">
+    </div>
+
+    <div class="sidebar-menu">
+        <ul>
+            <li data-page="/admin">
+                <a href="/admin"><span class="las la-igloo"></span>
+                    <span>Trang chủ</span></a>
+            </li>
+            <li>
+                <a href="/admin/create-account"><span class="las la-users"></span>
+                    <span>Thêm tài khoản</span></a>
+            </li>
+            <li>
+                <a href="/admin/view-account"><span class="las la-user-circle"></span>
+                    <span>Danh sách tài khoản</span></a>
+            </li>
+            <li>
+                <a href="/admin/Project/view-project"><span class="las la-shopping-bag"></span>
+                    <span>Danh sách đồ án</span></a>
+            </li>
+            <li>
+                <a href="/admin/Assignment/view-assignment"><span class="las la-user-tag"></span>
+                    <span>Danh sách phân công</span></a>
+            </li>
+            <li>
+                <a href="/perform_logout"><span class="las la-sign-out-alt"></span>
+                    <span>Đăng xuất</span></a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const currentPath = window.location.pathname; // Lấy URL hiện tại
+        const menuItems = document.querySelectorAll('#sidebar-menu li');
+
+        menuItems.forEach(item => {
+            const page = item.getAttribute('data-page');
+            if (currentPath.includes(page)) {
+                item.classList.add('active'); // Thêm class active
+            }
+        });
+    });
+</script>
+</body>
+</html>

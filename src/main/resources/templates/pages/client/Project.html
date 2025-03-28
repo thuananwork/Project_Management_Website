@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{client-layout}">
+<th:block layout:fragment="content">
+    <th:block layout:insert="~{fragments/client/header}"/>
+    <th:block>
+        <div class="main">
+            <div>
+                <div class="container" style="background-color : transparent!important;">
+                </div>
+            </div>
+            <div class="container">
+                <div class="container-inner">
+                    <div class="d-flex justify-content-center">
+                        <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12" style="padding-left: 0px;">
+
+                            <div class="block block-account">
+                                <div class="block-title">
+                                    <strong><span>Tài khoản</span></strong>
+                                </div>
+                                <div class="block-content">
+                                    <ul>
+                                        <li><a th:href="@{/user/account/profile}">Thông tin tài
+                                            khoản</a>
+                                        </li>
+                                        <li class="current"><a th:href="@{/user/account/history}">Đồ án của tôi</a>
+                                        <li><a th:href="@{/user/account/weekly}">Tiến độ đồ án</a>
+                                        <li><a th:href="@{/user/evaluation}">Điểm</a>
+                                        </li>
+                                        <li><a
+                                                th:href="@{/user/account/notify}">Thông
+                                            Báo</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-main col-lg-9 col-md-9 col-sm-12 col-xs-12 col-fhs-main-body">
+                            <ul id="admin_messages"></ul>
+                            <style>
+                                .fhs-input-box .fhs-input-group.checked-error .fhs-textbox-alert,
+                                .fhs-input-box.checked-error .fhs-input-group .fhs-textbox-alert {
+                                    background: url(https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_fail.png) no-repeat center center;
+                                    -webkit-background-size: cover;
+                                    -moz-background-size: cover;
+                                    -o-background-size: cover;
+                                    background-size: cover;
+                                    height: 20px;
+                                    width: 20px;
+                                    display: inline-block;
+                                }
+
+                                .fhs-input-box.checked-pass .fhs-input-group .fhs-textbox-alert {
+                                    background: url(https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_success.png) no-repeat center center;
+                                    -webkit-background-size: cover;
+                                    -moz-background-size: cover;
+                                    -o-background-size: cover;
+                                    background-size: cover;
+                                    height: 20px;
+                                    width: 20px;
+                                    display: inline-block;
+                                }
+                            </style>
+                            <div class="my-tabslider-order">
+                                <div class="page-title">
+                                    <h1>Đồ án của tôi</h1>
+                                </div>
+                            </div>
+                            <div class="my-account">
+                                <style>
+                                    /* start css for main template*/
+                                    .col-fhs-main-body {
+                                        background-color: transparent;
+                                    }
+
+                                    .main {
+                                        margin-top: 10px;
+                                    }
+
+                                    /*end css for main template*/
+                                    /*  ****** Responsive Table ***** */
+                                    .table-order-container {
+                                        color: #616161;
+                                        display: table;
+                                        margin: 0 0 1em 0;
+                                        width: 100%;
+                                        border-collapse: collapse;
+                                    }
+
+                                    .table-order-container span.price {
+                                        font-family: sans-serif;
+                                    }
+
+                                    .table-order-container .table-order-row {
+                                        display: table-row;
+                                        border-bottom: 1px solid #E0E0E0;
+                                    }
+
+                                    .table-order-container .table-order-row.table-order-header {
+                                        font-weight: 700;
+                                        background: white;
+                                        font-size: 16px;
+                                    }
+
+                                    .table-order-container .table-order-cell {
+                                        display: table-cell;
+                                        padding: 15px 5px;
+                                        font-size: 14px;
+                                    }
+
+                                    .order-history-date-mobile,
+                                    .order-history-person-mobile,
+                                    .order-history-total-mobile,
+                                    .order-history-status-mobile {
+                                        display: none;
+                                    }
+
+                                    @media screen and (max-width: 992px) {
+
+                                        /* start css for main template*/
+                                        .col-fhs-main-body,
+                                        .container {
+                                            padding: 0px;
+                                        }
+
+                                        /* end css for main template*/
+                                        .table-order-container {
+                                            display: block;
+                                        }
+
+                                        .table-order-container .table-order-row {
+                                            display: block;
+                                            padding: 10px 0px;
+                                        }
+
+                                        .table-order-container .table-order-cell {
+                                            display: block;
+                                            padding: 0px 10px;
+                                        }
+
+                                        .table-order-container .table-order-row.table-order-header {
+                                            display: none;
+                                        }
+
+                                        .order-history-date-mobile,
+                                        .order-history-person-mobile,
+                                        .order-history-total-mobile {
+                                            display: unset;
+                                            float: left;
+                                            margin-right: 5px;
+                                            font-size: 12px;
+                                            margin-top: 2px;
+                                        }
+
+                                        .table-order-cell-content-mobile {
+                                            display: flex;
+                                        }
+
+                                        table-order-cell-content-mobile div:first-child {
+                                            font-size: 16px;
+                                            font-weight: bold;
+                                        }
+
+
+                                        .table-order-cell:nth-child(5),
+                                        .table-order-cell:nth-child(6) {
+                                            display: none;
+                                        }
+
+                                        .order-history-id {
+                                            font-size: 1.2em;
+                                            font-weight: bold;
+                                        }
+                                    }
+                                </style>
+                                <div class="table-order-container">
+                                    <div class="table-order-row table-order-header">
+                                        <div class="table-order-cell">Mã</div>
+                                        <div class="table-order-cell">Tên đề tài</div>
+                                        <div class="table-order-cell">Yêu cầu</div>
+                                        <div class="table-order-cell">Ngày bắt đầu</div>
+                                        <div class="table-order-cell">Ngày kết thúc</div>
+                                        <div class="table-order-cell">Trạng thái</div>
+                                        <div class="table-order-cell"></div>
+                                    </div>
+                                    <th:block th:if="${projects != null}">
+                                        <div class="table-order-row">
+                                            <div class="table-order-cell">
+                                                <div class="table-order-cell-content table-order-cell-content-mobile">
+                                                    <div class="order-history-id" th:text="${projects.projectId}"></div>
+                                                </div>
+                                            </div>
+                                            <div class="table-order-cell">
+                                                <div class="table-order-cell-content">
+                                                    <div class="order-history-date-mobile">Tên đề tài:</div>
+                                                    <div th:text="${projects.title}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="table-order-cell">
+                                                <div class="table-order-cell-content">
+                                                    <div class="order-history-date-mobile">Mô tả</div>
+                                                    <div th:text="${projects.description}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="table-order-cell" style="max-width:250px;">
+                                                <div class="table-order-cell-content">
+                                                    <div class="order-history-person-mobile">Ngày bắt đầu:</div>
+                                                    <div th:text="${date}">
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="table-order-cell">
+                                                <div class="table-order-cell-content">
+                                                    <div class="order-history-total-mobile">Ngày kết thúc:</div>
+                                                    <div th:text="${projects.endDate}">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="table-order-cell">
+                                                <div class="table-order-cell-content">
+                                                    <div class="order-history-total-mobile">Trạng thái:</div>
+                                                    <div th:text="${status}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th:block>
+                                    <th:block th:if="${projects == null}">
+                                        <div class="table-order-row">
+                                            <div class="table-order-cell" colspan="6" style="text-align: center; color: grey;">
+                                                <p>Chưa có đồ án nào...</p>
+                                            </div>
+                                        </div>
+                                    </th:block>
+                                </div>
+
+                                <script type="text/javascript">
+                                    $jq(window).ready(function () {
+                                        $jq(".table-order-row.table-order-touch-mobile").on("click", function (event) {
+                                            var item = $jq(".table-order-row.table-order-touch-mobile").index(this);
+                                            event.preventDefault();
+                                            $jq(".table-order-row.table-order-touch-mobile").each(function (index) {
+                                                if (item == index) {
+                                                    window.location = $jq(this).data("hrefs");
+                                                }
+                                            });
+                                        });
+                                    })
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    <th:block layout:insert="~{fragments/client/footer}"/>
+</th:block>
+</html>

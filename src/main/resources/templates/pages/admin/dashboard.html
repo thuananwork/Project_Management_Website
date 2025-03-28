@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Trang chủ</title>
+    <link rel="stylesheet"
+          href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin/dashboard.css}">
+    <link rel="icon" href="/image/p.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<div th:replace="/fragments/admin/sidebar :: sidebar"></div>
+
+<div class="main-content">
+    <header>
+        <h2>
+            <label for="nav-toggle">
+                <span class="las la-bars"></span>
+            </label>
+            Trang chủ
+        </h2>
+
+        <div class="user-wrapper">
+            <img src="/image/ico_account_gray.png" width="24px" height="24px" alt="">
+            <div>
+                <h4 th:text="${authen_user.firstName + ' ' + authen_user.lastName}">Dung Cao Quoc</h4>
+                <small th:text="${authen_user.role.roleName}"></small>
+            </div>
+        </div>
+    </header>
+
+    <div class="overview-container">
+        <div class="overview-box project-box">
+            <h3>Đồ án</h3>
+            <span th:text="${totalProject}">0</span>
+            <p>
+                Hoàn thành: <span th:text="${totalProjectCompleted}">0</span><br>
+                Chưa hoàn thành: <span th:text="${totalProjectIncomplete}">0</span>
+            </p>
+        </div>
+        <div class="overview-box account-box">
+            <h3>Tài khoản: </h3>
+            <span th:text="${totalUser}">0</span>
+            <p>
+                Sinh viên: <span th:text="${totalUserStudent}">0</span><br>
+                Giảng viên: <span th:text="${totalUserLecturer}">0</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="filter-container">
+        <input type="text" id="dateRangePicker" class="date-picker" placeholder="Ngày bắt đầu - Ngày kết thúc">
+        <button id="filterButton">Lọc</button>
+    </div>
+
+    <div class="table-container">
+        <h3>Danh sách đồ án</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Tên đồ án</th>
+                <th>Thời gian bắt đầu</th>
+                <th>Thời gian kết thúc</th>
+                <th>Trạng thái</th>
+            </tr>
+            </thead>
+            <tbody id="projectList">
+            <!-- Toàn bộ danh sách ban đầu sẽ hiển thị ở đây -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const projectList = document.getElementById("projectList");
+        const dateRangePicker = flatpickr("#dateRangePicker", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            locale: {
+                firstDayOfWeek: 1 // Bắt đầu từ thứ Hai
+            }
+        });
+
+        // Hàm tải tất cả dự án
+        function loadAllProjects() {
+            fetch('/admin/projects') // API lấy tất cả dữ liệu
+                .then(response => response.json())
+                .then(data => updateTable(data))
+                .catch(error => console.error("Error loading all projects:", error));
+        }
+
+        // Hàm cập nhật bảng
+        function updateTable(data) {
+            console.log(data);
+            projectList.innerHTML = ""; // Xóa nội dung cũ
+            if (data.length === 0) {
+                projectList.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center;">Không có dữ liệu</td>
+                        </tr>`;
+                return;
+            }
+            console.log('vao day', data)
+            data.forEach(project => {
+                const row = `
+                        <tr>
+                            <td>${project.title}</td>
+                            <td>${project.startDate}</td>
+                            <td>${project.endDate}</td>
+                            <td>${project.status}</td>
+                        </tr>
+                    `;
+                projectList.innerHTML += row;
+            });
+        }
+
+        // Hàm lọc dự án theo thời gian
+        function filterProjects(startDate, endDate) {
+            fetch(`/admin/projects/filter?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => {
+                        if (!response.ok) {
+                            throw new Error("HTTP error! status: " + response.status);
+                        }
+                        return response.json();
+                    }
+                )
+                .then(
+                    data => {
+                        console.log("Filtered data:", data); // Log dữ liệu để kiểm tra
+                        updateTable(data); // Gọi hàm cập nhật bảng với dữ liệu
+                    })
+                .catch(error => console.error("Error filtering projects:", error));
+        }
+
+        // Xử lý khi nhấn nút Lọc
+        document.getElementById("filterButton").addEventListener("click", function () {
+            const dateRange = dateRangePicker.input.value.split(" to ");
+            const startDate = dateRange[0];
+            const endDate = dateRange[1];
+
+            if (startDate && endDate) {
+                filterProjects(startDate, endDate); // Gọi API lọc
+            } else {
+                alert("Vui lòng chọn khoảng thời gian để lọc.");
+            }
+        });
+
+        // Tải danh sách ban đầu khi trang được tải
+        loadAllProjects();
+    });
+
+</script>
+
+</body>
+</html>

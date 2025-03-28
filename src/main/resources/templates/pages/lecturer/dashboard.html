@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>TEACHER Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/lecturer/style.css}"/>
+    <!-- Favicon -->
+    <link href="img/icons8-admin-settings-male-16.png" rel="icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <aside>
+        <div class="navbar-top">
+            <div class="profile">
+                <div class="info">
+                    <h2>Chào mừng, </h2>
+                    <p class="text-muted"
+                       th:text="${authen_user.firstName + ' ' + (authen_user.lastName == null ? '' : authen_user.lastName)}"></p>
+                </div>
+            </div>
+            <div class="btn-close">
+                <span class="material-symbols-outlined"> close </span>
+            </div>
+        </div>
+
+        <div class="navbar-content">
+            <a th:href="@{/lecturer}" class="active">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Trang chủ</h3>
+            </a>
+            <a th:href="@{/lecturer/confirm}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xác nhận đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/create_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Tạo báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/list_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xem báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/evaluation}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Báo cáo của sinh viên</h3>
+            </a>
+            <a th:href="@{/lecturer/projectGrade}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Đánh giá đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/profile}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Thông tin cá nhân</h3>
+            </a>
+            <a href="/perform_logout" class="logout">
+                <span class="material-symbols-outlined"> Logout </span>
+                <h3>Đăng xuất</h3>
+            </a>
+        </div>
+    </aside>
+    <main>
+        <h1 style="margin-bottom: 2rem">Giảng viên</h1>
+        <div class="insights">
+            <div class="insight sales">
+                                        <span class="material-symbols-outlined">
+                                            analytics
+                                        </span>
+                <div class="insight-content">
+                    <div class="insight-figure">
+                        <h3>Tổng đồ án được phân công</h3>
+                        <p th:text="${count}"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight products">
+                                        <span class="material-symbols-outlined">
+                                            inventory
+                                        </span>
+                <div class="insight-content">
+                    <div class="insight-figure">
+                        <h3>Tổng đồ án chưa xác nhận</h3>
+                        <p th:text="${counts}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- USER TABLE -->
+        <div class="recent-orders">
+            <h2>Đồ án chưa xác nhận</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Đề Tài</th>
+                    <th>Yêu cầu</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Sinh viên thực hiện</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="project : ${projects}">
+                    <td th:text="${project.id}"></td>
+                    <td th:text="${project.title}"></td>
+                    <td th:text="${project.description}"></td>
+                    <td th:text="${#dates.format(project.startDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${#dates.format(project.endDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${project.firstName + ' ' + project.lastName}"></td>
+                    <td>
+                        <button class="btn btn-warning" onclick="confirmProject(this)"
+                                th:data-project-id="${project.id}">
+                            Xác nhận
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    const statuses = document.querySelectorAll('.status')
+    statuses.forEach(status => {
+        if (status.innerText === 'Completed') {
+            status.style.color = '#41f1b6'
+        } else if (status.innerText === 'Waiting') {
+            status.style.color = '#eaa636'
+        } else {
+            status.style.color = '#fc515f'
+        }
+    });
+
+</script>
+</body>
+</html>

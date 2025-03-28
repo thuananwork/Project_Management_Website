@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Phân công</title>
+    <link rel="stylesheet"
+          href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin/view_account.css}">
+    <link rel="icon" href="/image/p.png" type="image/x-icon">
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<div th:replace="/fragments/admin/sidebar :: sidebar"></div>
+
+<div class="main-content">
+    <header>
+        <h2>
+            <label for="nav-toggle">
+                <span class="las la-bars"></span>
+            </label>
+            Phân công
+        </h2>
+        <div class="user-wrapper">
+            <img src="/image/ico_account_gray.png" width="24px" height="24px" alt="">
+            <div>
+                <h4 th:text="${authen_user.firstName + ' ' + authen_user.lastName}">Dung Cao Quoc</h4>
+                <small th:text="${authen_user.role.roleName}"></small>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="main-assignment">
+            <div class="assignment-container">
+                <form th:action="@{/admin/Assignment/create-assignment}"
+                      th:object="${assignment}"
+                      method="POST"
+                      enctype="multipart/form-data">
+                    <span class="assignment-title" th:text="'Phân công'"></span>
+                    <div class="assignment-fields">
+
+                        <div class="assignment-input">
+                            <label>Giảng viên phụ trách</label>
+                            <select id="lecturer" name="lecturer" required>
+                                <th:block th:each="c : ${lecturer}">
+                                    <option th:value="${c.id}" th:text="${c.getFirstName()}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+
+                        <div class="assignment-input">
+                            <label for="projects">Tên đồ án</label>
+                            <select id="projects" name="projects" required>
+                                <th:block th:each="c : ${projects}">
+                                    <option th:value="${c.projectId}" th:text="${c.getTitle()}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="assignment-button">
+                        <button type="submit">
+                            <span class="btnText">Lưu</span>
+                        </button>
+                    </div>
+
+                    <div class="assignment-success">
+                        <img th:if="${success}" src="/image/success.png">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+<script>
+    let form = document.getElementById('frm');
+
+    function changeRole() {
+        form.submit();
+    }
+</script>
+</body>
+</html>

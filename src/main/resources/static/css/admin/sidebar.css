@@ -1,0 +1,39 @@
+ul li.active a {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+
+.sidebar {
+    width: 280px;
+    transition: width 0.3s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar.collapsed {
+    width: 80px; /* Độ rộng khi sidebar thu gọn */
+}
+
+.sidebar-brand {
+    width: 100%; /* Chiếm toàn bộ chiều rộng của sidebar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.sidebar-brand img {
+    width: 100%; /* Đảm bảo ảnh thu nhỏ theo chiều rộng */
+    height: auto; /* Tự động giữ tỷ lệ */
+    object-fit: contain; /* Ảnh thu nhỏ không bị cắt */
+    max-width: 280px; /* Giới hạn kích thước tối đa của ảnh */
+    transition: all 0.3s;
+}
+
+.sidebar.collapsed .sidebar-brand img {
+    max-width: 60px; /* Giới hạn kích thước ảnh khi thu nhỏ */
+}

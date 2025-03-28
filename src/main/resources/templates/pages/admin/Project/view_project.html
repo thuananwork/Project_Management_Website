@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Danh sách đồ án</title>
+    <link rel="stylesheet"
+          href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin/view_project.css}">
+    <link rel="icon" href="/image/p.png" type="image/x-icon">
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<div th:replace="/fragments/admin/sidebar :: sidebar"></div>
+
+<div class="main-content">
+    <header>
+        <h2>
+            <label for="nav-toggle">
+                <span class="las la-bars"></span>
+            </label>
+            Danh sách đồ án
+        </h2>
+
+
+        <div class="user-wrapper">
+            <img src="/image/ico_account_gray.png" width="24px" height="24px" alt="">
+            <div>
+                <h4 th:text="${authen_user.firstName + ' ' + authen_user.lastName}">Dung Cao Quoc</h4>
+                <small th:text="${authen_user.role.roleName}"></small>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="form-container">
+            <form id="frm" action="/admin/Project/view-project" method="get">
+                <div class="search-wrapper">
+                    <span class="las la-search"></span>
+                    <input type="search" name="keyword" placeholder="Tìm theo tên đồ án...">
+                </div>
+                <div class="dropdown-role" style="float: left">
+                    <select name="status" class="dropdown-box" onchange="changeRole()">
+                        <option value="" th:selected="${status == null || status.isEmpty()}">Tất cả</option>
+                        <option value="ChuaTienHanh" th:selected="${status == 'ChuaTienHanh'}">Chưa tiến hành</option>
+                        <option value="DangTienHanh" th:selected="${status == 'DangTienHanh'}">Đang tiến hành</option>
+                        <option value="HoanThanh" th:selected="${status == 'HoanThanh'}">Hoàn thành</option>
+                    </select>
+                </div>
+            </form>
+            <div class="list-accounts">
+                <div style="margin-bottom: 10px; display: flex; justify-content: flex-end;">
+                    <a href="/admin/Project/create-project" class="btn btn-add"
+                       style="background-color: #009DCE; color: #fff; padding: 8px 12px; border-radius: 5px; text-decoration: none;">
+                        + Thêm đồ án
+                    </a>
+                </div>
+                <div style="margin-bottom: 10px; display: flex; justify-content: flex-end;">
+                    <a href="/admin/Assignment/create-assignment" class="btn btn-add"
+                       style="background-color: #009DCE; color: #fff; padding: 8px 12px; border-radius: 5px; text-decoration: none;">
+                        Phân công
+                    </a>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tiêu đề</th>
+                        <th>Phòng ban</th>
+                        <th>Ngày bắt đầu</th>
+                        <th>Ngày kết thúc</th>
+                        <th>Trạng thái</th>
+                        <th>file</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="project, iterStat : ${projects}">
+                        <td th:text="${iterStat.count}"></td>
+                        <td th:text="${project.title}"></td>
+                        <td th:text="${project.department}"></td>
+                        <td th:text="${project.startDate}"></td>
+                        <td th:text="${project.endDate}"></td>
+                        <td th:text="${project.status}"></td>
+                        <td>
+                            <a th:href="@{'/download'(fileName=${project.file})}"
+                               class="btn btn-download"
+                            >
+                                Tải về
+                            </a>
+                        </td>
+                        <td>
+                            <a th:href="@{'/admin/Project/edit?id=' + ${project.projectId}}"
+                               class="btn btn-edit" th:if="${project.status.name() == 'ChuaTienHanh'}">Sửa</a>
+                            <a th:href="@{'/admin/Project/delete?id=' + ${project.projectId}}"
+                               class="btn btn-delete"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa?');"
+                               th:if="${project.status.name() == 'ChuaTienHanh'}"
+                            >Xóa</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+    let form = document.getElementById('frm');
+
+    function changeRole() {
+        form.submit();
+    }
+
+    async function fetchProjects() {
+        try {
+            const response = await fetch('/admin/Project/view-project');
+            const projects = await response.json();
+            const tableBody = document.getElementById('projectList');
+
+            tableBody.innerHTML = ''; // Xóa dữ liệu cũ
+
+            projects.forEach((project, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${project.title}</td>
+                        <td>${project.title}</td>
+                        <td>${project.department}</td>
+                        <td>${project.startDate}</td>
+                        <td>${project.endDate}</td>
+                        <td>${project.status}</td>
+                        <td>${project.fileUrl ? project.fileUrl.split('/').pop() : 'Không có tệp'}</td>
+                        <td>
+                            ${project.fileUrl ? `<a href="${project.fileUrl}" target="_blank">Tải xuống</a>` : ''}
+                        </td>
+                    `;
+
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching projects:', error);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const openModalBtn = document.getElementById("openModalBtn");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const modal = document.getElementById("modal");
+
+        // Mở modal
+        openModalBtn.addEventListener("click", function () {
+            modal.style.display = "block";
+        });
+
+        // Đóng modal
+        closeModalBtn.addEventListener("click", function () {
+            modal.style.display = "none";
+        });
+
+        // Đóng modal khi click ra ngoài
+        window.addEventListener("click", function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+
+    // Gọi hàm khi tải trang
+    document.addEventListener('DOMContentLoaded', fetchProjects);
+
+    document.getElementById("projectForm").addEventListener("submit", function (e) {
+        e.preventDefault(); // Ngăn reload trang
+
+        // Lấy dữ liệu từ form
+        const title = document.getElementById("title").value;
+        const description = document.getElementById("description").value;
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const department = document.getElementById("department").value;
+        const maxStudents = document.getElementById("maxStudents").value;
+        const files = document.getElementById("files").value;
+        console.log(description);
+        // Tạo query parameters
+        const params = new URLSearchParams({
+            title: title,
+            description: description,
+            startDate: startDate,
+            endDate: endDate,
+            department: department,
+            maxStudents: maxStudents,
+            files: files
+        });
+        console.log(params);
+
+        // Gửi dữ liệu bằng Fetch API
+        fetch(`/admin/Project/create-project?${params.toString()}`, {
+            method: "POST"
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("Thêm đồ án thành công!");
+                    window.location.reload();
+                } else {
+                    alert("Có lỗi xảy ra khi thêm đồ án!");
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi: ", error);
+                alert("Lỗi kết nối đến server!");
+            });
+    });
+</script>
+</body>
+</html>

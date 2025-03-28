@@ -1,0 +1,118 @@
+create table failed_jobs
+(
+    id         bigint unsigned auto_increment
+        primary key,
+    connection text                                not null,
+    queue      text                                not null,
+    payload    longtext                            not null,
+    exception  longtext                            not null,
+    failed_at  timestamp default CURRENT_TIMESTAMP not null
+)
+    collate = utf8mb4_unicode_ci;
+
+create table migrations
+(
+    id        int unsigned auto_increment
+        primary key,
+    migration varchar(255) not null,
+    batch     int          not null
+)
+    collate = utf8mb4_unicode_ci;
+
+create table password_resets
+(
+    email      varchar(255) not null,
+    token      varchar(255) not null,
+    created_at timestamp    null
+)
+    collate = utf8mb4_unicode_ci;
+
+create index password_resets_email_index
+    on password_resets (email);
+
+create table permissions
+(
+    id         bigint unsigned auto_increment
+        primary key,
+    name       varchar(255) not null,
+    guard_name varchar(255) not null,
+    created_at timestamp    null,
+    updated_at timestamp    null,
+    constraint permissions_name_guard_name_unique
+        unique (name, guard_name)
+)
+    collate = utf8mb4_unicode_ci;
+
+create table model_has_permissions
+(
+    permission_id bigint unsigned not null,
+    model_type    varchar(255)    not null,
+    model_id      bigint unsigned not null,
+    primary key (permission_id, model_id, model_type),
+    constraint model_has_permissions_permission_id_foreign
+        foreign key (permission_id) references permissions (id)
+            on delete cascade
+)
+    collate = utf8mb4_unicode_ci;
+
+create index model_has_permissions_model_id_model_type_index
+    on model_has_permissions (model_id, model_type);
+
+create table roles
+(
+    id         bigint unsigned auto_increment
+        primary key,
+    name       varchar(255) not null,
+    guard_name varchar(255) not null,
+    created_at timestamp    null,
+    updated_at timestamp    null,
+    constraint roles_name_guard_name_unique
+        unique (name, guard_name)
+)
+    collate = utf8mb4_unicode_ci;
+
+create table model_has_roles
+(
+    role_id    bigint unsigned not null,
+    model_type varchar(255)    not null,
+    model_id   bigint unsigned not null,
+    primary key (role_id, model_id, model_type),
+    constraint model_has_roles_role_id_foreign
+        foreign key (role_id) references roles (id)
+            on delete cascade
+)
+    collate = utf8mb4_unicode_ci;
+
+create index model_has_roles_model_id_model_type_index
+    on model_has_roles (model_id, model_type);
+
+create table role_has_permissions
+(
+    permission_id bigint unsigned not null,
+    role_id       bigint unsigned not null,
+    primary key (permission_id, role_id),
+    constraint role_has_permissions_permission_id_foreign
+        foreign key (permission_id) references permissions (id)
+            on delete cascade,
+    constraint role_has_permissions_role_id_foreign
+        foreign key (role_id) references roles (id)
+            on delete cascade
+)
+    collate = utf8mb4_unicode_ci;
+
+create table users
+(
+    id                bigint unsigned auto_increment
+        primary key,
+    name              varchar(255) not null,
+    email             varchar(255) not null,
+    email_verified_at timestamp    null,
+    password          varchar(255) not null,
+    remember_token    varchar(100) null,
+    created_at        timestamp    null,
+    updated_at        timestamp    null,
+    constraint users_email_unique
+        unique (email)
+)
+    collate = utf8mb4_unicode_ci;
+

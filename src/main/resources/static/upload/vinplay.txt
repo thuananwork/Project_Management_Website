@@ -1,0 +1,1643 @@
+create table DATABASECHANGELOG
+(
+    ID            varchar(255) not null,
+    AUTHOR        varchar(255) not null,
+    FILENAME      varchar(255) not null,
+    DATEEXECUTED  datetime     not null,
+    ORDEREXECUTED int          not null,
+    EXECTYPE      varchar(10)  not null,
+    MD5SUM        varchar(35)  null,
+    DESCRIPTION   varchar(255) null,
+    COMMENTS      varchar(255) null,
+    TAG           varchar(255) null,
+    LIQUIBASE     varchar(20)  null,
+    CONTEXTS      varchar(255) null,
+    LABELS        varchar(255) null,
+    DEPLOYMENT_ID varchar(10)  null
+);
+
+create table DATABASECHANGELOGLOCK
+(
+    ID          int          not null
+        primary key,
+    LOCKED      bit          not null,
+    LOCKGRANTED datetime     null,
+    LOCKEDBY    varchar(255) null
+);
+
+create table agency_code
+(
+    id            bigint auto_increment
+        primary key,
+    user_id       bigint                              not null,
+    referral_code varchar(128)                        null,
+    created_at    timestamp default CURRENT_TIMESTAMP null,
+    updated_at    timestamp default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP
+);
+
+create table attendance_config
+(
+    id         int auto_increment
+        primary key,
+    start_date datetime not null,
+    end_date   datetime not null,
+    money      bigint   not null,
+    create_at  datetime not null
+);
+
+create table bank_sms
+(
+    id           int auto_increment
+        primary key,
+    nickname     varchar(100)                        null,
+    sms          varchar(500)                        null,
+    amount       double                              null,
+    create_time  timestamp default CURRENT_TIMESTAMP null,
+    status       int       default 0                 null,
+    resent_count int       default 0                 null,
+    update_time  timestamp default CURRENT_TIMESTAMP null,
+    address      varchar(45) charset latin1          null,
+    description  text                                null
+);
+
+create table banks
+(
+    id          int auto_increment
+        primary key,
+    bank_name   varchar(150) null,
+    status      tinyint      null,
+    create_date varchar(120) null,
+    update_date varchar(120) null,
+    code        varchar(50)  null,
+    logo        varchar(255) null,
+    add_by      varchar(255) null
+);
+
+create table banner
+(
+    id         int auto_increment
+        primary key,
+    title      varchar(300)  null,
+    status     tinyint(2)    null,
+    image_path varchar(1000) null,
+    action     tinyint(1)    null,
+    url        varchar(1000) null
+);
+
+create table cmduser
+(
+    cmdid        varchar(100) not null comment 'user in wm'
+        primary key,
+    nick_name    varchar(100) null,
+    cmd_username varchar(100) null,
+    cmd_countid  bigint       null,
+    constraint nick_name
+        unique (nick_name)
+);
+
+create table ebetuser
+(
+    ebetid      bigint      null,
+    nick_name   varchar(80) null,
+    password    varchar(50) null,
+    ebetcountid bigint      null,
+    timestamps  int(10)     null
+);
+
+create table event
+(
+    id           int auto_increment
+        primary key,
+    name         varchar(400) null,
+    created_date timestamp    null on update CURRENT_TIMESTAMP,
+    amount       bigint(11)   null,
+    expired_date timestamp    null on update CURRENT_TIMESTAMP
+);
+
+create table event_vp
+(
+    id          int auto_increment
+        primary key,
+    name        varchar(100)                        not null,
+    value       int       default 0                 not null,
+    num         int       default 0                 not null,
+    `use`       int       default 0                 not null,
+    update_time timestamp default CURRENT_TIMESTAMP not null
+);
+
+create table event_vp_lucky
+(
+    date_run    varchar(45)                         not null,
+    num_run     int       default 0                 not null,
+    type        int                                 not null,
+    update_time timestamp default CURRENT_TIMESTAMP not null,
+    primary key (date_run, type)
+);
+
+create table freeze_money
+(
+    id          bigint auto_increment
+        primary key,
+    session_id  varchar(100)  null,
+    user_id     bigint        null,
+    nick_name   varchar(45)   null,
+    game_name   varchar(45)   null,
+    room_id     varchar(100)  null,
+    money       bigint        null,
+    money_type  varchar(5)    null,
+    create_time datetime      null,
+    update_time datetime      null,
+    status      int default 0 null
+);
+
+create index game_name_index
+    on freeze_money (game_name);
+
+create index money_type_index
+    on freeze_money (money_type);
+
+create index nick_name_index
+    on freeze_money (nick_name);
+
+create index session_id_index
+    on freeze_money (session_id);
+
+create index status_index
+    on freeze_money (status);
+
+create index user_id_index
+    on freeze_money (user_id);
+
+create table game_config
+(
+    id       int auto_increment
+        primary key,
+    name     varchar(255) null,
+    value    longtext     null,
+    version  varchar(50)  null,
+    platform varchar(50)  not null
+);
+
+create table gift_code_useds
+(
+    giftcode_id int                                 not null,
+    username    varchar(20)                         not null,
+    created_at  timestamp default CURRENT_TIMESTAMP not null,
+    updated_at  timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    id_number   varchar(50)                         null,
+    event       int(50)                             null,
+    primary key (giftcode_id, username)
+);
+
+create index gift_code_useds_uid_type_index
+    on gift_code_useds (username);
+
+create index id_number
+    on gift_code_useds (id_number, giftcode_id);
+
+create table gift_codes
+(
+    id         int unsigned auto_increment
+        primary key,
+    giftcode   varchar(50)                         null,
+    type       tinyint                             null,
+    money      bigint                              null,
+    time_used  int       default 0                 null,
+    max_use    int       default 0                 null,
+    `from`     timestamp                           null,
+    exprired   timestamp                           null,
+    created_at timestamp default CURRENT_TIMESTAMP not null,
+    created_by varchar(255)                        null,
+    event      int(255)                            null,
+    user_name  varchar(50)                         null,
+    updated_at timestamp                           null on update CURRENT_TIMESTAMP,
+    constraint giftcode
+        unique (giftcode)
+);
+
+create table log_count_user_play
+(
+    id             int auto_increment,
+    time_report    date              not null,
+    nick_name      varchar(50)       not null,
+    wm             int               null,
+    ibc            int               null,
+    ag             int               null,
+    tlmn           int               null,
+    bacay          int               null,
+    xocdia         int               null,
+    minipoker      int               null,
+    slot_pokemon   int               null,
+    baucua         int               null,
+    taixiu         int               null,
+    caothap        int               null,
+    slot_bitcoin   int               null,
+    slot_taydu     int               null,
+    slot_angrybird int               null,
+    slot_thantai   int               null,
+    slot_thethao   int               null,
+    deposit        int               null,
+    withdraw       int               null,
+    cmd            int     default 0 null,
+    slot_chiemtinh int     default 0 null,
+    taixiu_st      int               null,
+    fish           varchar(255)      null,
+    slot_thanbai   int(10) default 0 null,
+    ebet           int(10) default 0 null,
+    sbo            int(10) default 0 null,
+    slot_bikini    int     default 0 null,
+    slot_galaxy    int     default 0 null,
+    attendance     int     default 0 null,
+    primary key (id, time_report, nick_name)
+);
+
+create index idx_nickname
+    on log_count_user_play (nick_name)
+    comment 'index';
+
+create index idx_time_report
+    on log_count_user_play (time_report)
+    comment 'index time_report';
+
+create table log_hoan_tra
+(
+    id                 int auto_increment
+        primary key,
+    nick_name          varchar(50)                         not null,
+    time               date                                not null,
+    vip_point          int                                 null,
+    total_money_sport  int                                 null,
+    hoan_tra_sport     int                                 null,
+    total_money_casino int                                 null,
+    hoan_tra_casino    int                                 null,
+    total_money_game   int                                 null,
+    hoan_tra_game      int                                 null,
+    vip_index          int                                 null,
+    send_success       tinyint(1)                          null,
+    created_at         timestamp default CURRENT_TIMESTAMP not null,
+    updated_at         timestamp                           null on update CURRENT_TIMESTAMP,
+    message            varchar(255)                        null
+);
+
+create table log_hoan_tra_histories
+(
+    id                 int auto_increment
+        primary key,
+    nick_name          varchar(50)                         not null,
+    time               date                                not null,
+    vip_point          int                                 null,
+    total_money_sport  int                                 null,
+    hoan_tra_sport     int                                 null,
+    total_money_casino int                                 null,
+    hoan_tra_casino    int                                 null,
+    total_money_game   int                                 null,
+    hoan_tra_game      int                                 null,
+    vip_index          int                                 null,
+    send_success       tinyint(1)                          null,
+    created_at         timestamp default CURRENT_TIMESTAMP not null,
+    updated_at         timestamp                           null on update CURRENT_TIMESTAMP,
+    message            varchar(255)                        null
+);
+
+create index idx_nickname
+    on log_hoan_tra_histories (nick_name)
+    comment 'nickname index';
+
+create index idx_time
+    on log_hoan_tra_histories (time)
+    comment 'time index';
+
+create table log_report_user
+(
+    id                 int auto_increment
+        primary key,
+    time_report        date             not null,
+    nick_name          varchar(50)      not null,
+    wm                 bigint           null,
+    wm_win             bigint           null,
+    ibc                bigint           null,
+    ibc_win            bigint           null,
+    ag                 bigint           null,
+    ag_win             bigint           null,
+    tlmn               bigint           null,
+    tlmn_win           bigint           null,
+    bacay              bigint           null,
+    bacay_win          bigint           null,
+    xocdia             bigint           null,
+    xocdia_win         bigint           null,
+    minipoker          bigint           null,
+    minipoker_win      bigint           null,
+    slot_pokemon       bigint           null,
+    slot_pokemon_win   bigint           null,
+    baucua             bigint           null,
+    baucua_win         bigint           null,
+    taixiu             bigint           null,
+    taixiu_win         bigint           null,
+    caothap            bigint           null,
+    caothap_win        bigint           null,
+    slot_bitcoin       bigint           null,
+    slot_bitcoin_win   bigint           null,
+    slot_taydu         bigint           null,
+    slot_taydu_win     bigint           null,
+    slot_angrybird     bigint           null,
+    slot_angrybird_win bigint           null,
+    slot_thantai       bigint           null,
+    slot_thantai_win   bigint           null,
+    slot_thethao       bigint           null,
+    slot_thethao_win   bigint           null,
+    deposit            bigint           null,
+    withdraw           bigint           null,
+    t_bonus            bigint           null comment 'tổng bonus',
+    cmd                bigint           null,
+    cmd_win            bigint default 0 null,
+    t_refund           bigint default 0 null comment 'tổng hoàn tiền chiết khấu',
+    code               varchar(80)      null comment 'mã đại lý',
+    t_sport_bonus      bigint           null,
+    t_casino_bonus     bigint           null,
+    t_egame_bonus      bigint           null,
+    slot_chiemtinh     bigint default 0 null,
+    slot_chiemtinh_win bigint           null,
+    taixiu_st          bigint           null comment 'tai xiu sieu toc',
+    taixiu_st_win      bigint           null,
+    fish               bigint           null comment 'ban ca',
+    fish_win           bigint           null,
+    slot_thanbai       bigint default 0 null,
+    slot_thanbai_win   bigint default 0 null,
+    ebet               bigint default 0 null,
+    ebet_win           bigint default 0 null,
+    sbo                bigint default 0 null,
+    sbo_win            bigint default 0 null,
+    slot_bikini        bigint default 0 null,
+    slot_bikini_win    bigint default 0 null,
+    slot_galaxy        bigint default 0 null,
+    slot_galaxy_win    bigint default 0 null,
+    attendance         bigint default 0 null,
+    constraint nickname_time
+        unique (nick_name, time_report)
+);
+
+create index idx_nickname
+    on log_report_user (nick_name)
+    comment 'index';
+
+create index idx_time_report
+    on log_report_user (time_report)
+    comment 'index time_report';
+
+create table log_tranfer_agent
+(
+    id                      int auto_increment
+        primary key,
+    transaction_no          varchar(45)  not null,
+    agent_level1            varchar(45)  null,
+    nick_name_send          varchar(45)  null,
+    nick_name_receive       varchar(45)  null,
+    money_send              bigint       null,
+    money_receive           bigint       null,
+    status                  int          null,
+    fee                     bigint       null,
+    top_ds                  int          null,
+    process                 int          null,
+    ti_gia                  int          null,
+    is_freeze_money         int          null,
+    des_send                varchar(500) null,
+    des_receive             varchar(500) null,
+    session_id_freeze_money varchar(45)  null,
+    trans_time              varchar(45)  null,
+    update_time             varchar(45)  null
+);
+
+create index agent_level1_index
+    on log_tranfer_agent (agent_level1);
+
+create index des_receive_index
+    on log_tranfer_agent (des_receive(255));
+
+create index des_send_index
+    on log_tranfer_agent (des_send(255));
+
+create index fee_index
+    on log_tranfer_agent (fee);
+
+create index is_freeze_money_index
+    on log_tranfer_agent (is_freeze_money);
+
+create index money_receive_index
+    on log_tranfer_agent (money_receive);
+
+create index money_send_index
+    on log_tranfer_agent (money_send);
+
+create index nick_name_receive_index
+    on log_tranfer_agent (nick_name_receive);
+
+create index nick_name_send_index
+    on log_tranfer_agent (nick_name_send);
+
+create index process_index
+    on log_tranfer_agent (process);
+
+create index session_id_freeze_money_index
+    on log_tranfer_agent (session_id_freeze_money);
+
+create index status_index
+    on log_tranfer_agent (status);
+
+create index ti_gia_index
+    on log_tranfer_agent (ti_gia);
+
+create index top_ds_index
+    on log_tranfer_agent (top_ds);
+
+create index trans_time_index
+    on log_tranfer_agent (trans_time);
+
+create index transaction_no_index
+    on log_tranfer_agent (transaction_no);
+
+create index update_time_index
+    on log_tranfer_agent (update_time);
+
+create table money_system
+(
+    id          int auto_increment
+        primary key,
+    name        varchar(50)                         not null,
+    money       bigint    default 0                 not null,
+    update_time timestamp                           null,
+    create_time timestamp default CURRENT_TIMESTAMP not null
+);
+
+create table report_money_daily
+(
+    id          int auto_increment
+        primary key,
+    action_name varchar(256) null,
+    money_win   bigint       null,
+    money_lost  bigint       null,
+    money_other bigint       null,
+    fee         bigint       null,
+    date        date         null
+);
+
+create index action_name
+    on report_money_daily (action_name(255));
+
+create index date
+    on report_money_daily (date);
+
+create index id
+    on report_money_daily (id);
+
+create table sbouser
+(
+    sboid      varchar(50) null,
+    nick_name  varchar(80) null,
+    sbocountid bigint      null
+);
+
+create table tx_authority
+(
+    name varchar(50) not null
+        primary key
+);
+
+create table tx_user
+(
+    id                 bigint(38) auto_increment
+        primary key,
+    login              varchar(50)  not null,
+    password_hash      varchar(60)  null,
+    full_name          varchar(200) null,
+    activated          tinyint      null,
+    lang_key           varchar(10)  null,
+    created_by         varchar(50)  null,
+    created_date       datetime(6)  null,
+    last_modified_by   varchar(50)  null,
+    last_modified_date datetime(6)  null,
+    min_amount         double       null,
+    max_amount         double       null,
+    total_winamount    decimal(22)  null,
+    constraint tux_user_login
+        unique (login)
+);
+
+create table tx_user_authority
+(
+    user_id        bigint(38)  not null,
+    authority_name varchar(50) not null,
+    primary key (user_id, authority_name),
+    constraint fk_tx_authorityname
+        foreign key (authority_name) references tx_authority (name),
+    constraint fk_tx_userid
+        foreign key (user_id) references tx_user (id)
+);
+
+create table user_appotp
+(
+    nick_name varchar(100) not null
+        primary key,
+    secret    varchar(100) null
+);
+
+create table user_attendance
+(
+    id                int auto_increment
+        primary key,
+    attend_id         int           not null,
+    nick_name         varchar(50)   not null,
+    date_attend       datetime      not null,
+    consecutive       int(1)        not null,
+    bonus_basic       int default 0 null,
+    bonus_consecutive int default 0 null,
+    bonus_vip         int default 0 null,
+    spin              varchar(50)   null,
+    result            varchar(50)   null,
+    ip                varchar(90)   null
+);
+
+create table user_bonus
+(
+    id          bigint auto_increment
+        primary key,
+    nick_name   varchar(120)                        not null,
+    bonus_type  int                                 null,
+    amount      double                              null,
+    create_date varchar(150)                        null,
+    ip          varchar(150)                        null,
+    bonus_name  varchar(255)                        null,
+    created_at  timestamp default CURRENT_TIMESTAMP null
+);
+
+create table user_level
+(
+    id          bigint auto_increment
+        primary key,
+    nick_name   varchar(128)                        not null,
+    code        varchar(128)                        not null,
+    ancestor    varchar(255)                        not null,
+    created_at  timestamp default CURRENT_TIMESTAMP not null,
+    parent_user varchar(128)                        not null comment 'nickname parent'
+);
+
+create table user_mission_vin
+(
+    id                    bigint auto_increment
+        primary key,
+    user_id               bigint      null,
+    user_name             varchar(45) null,
+    nick_name             varchar(45) null,
+    mission_name          varchar(45) null,
+    level                 int         null,
+    match_win             int         null,
+    match_max             int         null,
+    received_reward_level int         null,
+    create_time           varchar(45) null,
+    update_time           varchar(45) null,
+    constraint id_UNIQUE
+        unique (id)
+);
+
+create index mission_name
+    on user_mission_vin (mission_name);
+
+create index nick_name
+    on user_mission_vin (nick_name);
+
+create index nick_name_mission_name
+    on user_mission_vin (nick_name, mission_name);
+
+create index time_index
+    on user_mission_vin (update_time);
+
+create table user_mission_xu
+(
+    id                    bigint auto_increment
+        primary key,
+    user_id               bigint      null,
+    user_name             varchar(45) null,
+    nick_name             varchar(45) null,
+    mission_name          varchar(45) null,
+    level                 int         null,
+    match_win             int         null,
+    match_max             int         null,
+    received_reward_level int         null,
+    create_time           varchar(45) null,
+    update_time           varchar(45) null,
+    constraint id_UNIQUE
+        unique (id)
+);
+
+create index mission_name
+    on user_mission_xu (mission_name);
+
+create index nick_name
+    on user_mission_xu (nick_name);
+
+create index nick_name_mission_name
+    on user_mission_xu (nick_name, mission_name);
+
+create index update_time
+    on user_mission_xu (update_time);
+
+create table user_value
+(
+    id        int auto_increment
+        primary key,
+    nick_name varchar(255) not null,
+    deposit   bigint       null,
+    withdraw  bigint       null
+);
+
+create table user_wages
+(
+    id          bigint auto_increment
+        primary key,
+    nick_name   varchar(128)                        not null,
+    created_at  datetime  default CURRENT_TIMESTAMP not null,
+    bonus       bigint    default 0                 not null,
+    status      tinyint                             not null,
+    modify_at   timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    parent_user varchar(128)                        null
+);
+
+create table users
+(
+    id               bigint auto_increment
+        primary key,
+    user_name        varchar(128)                         not null,
+    nick_name        varchar(128)                         null,
+    password         varchar(128)                         null,
+    email            varchar(128)                         null,
+    google_id        varchar(128)                         null,
+    facebook_id      varchar(128)                         null,
+    mobile           varchar(45)                          null,
+    identification   varchar(45)                          null,
+    avatar           int        default 0                 not null,
+    birthday         datetime                             null,
+    gender           bit        default b'1'              null,
+    address          varchar(128)                         null,
+    vin              bigint     default 0                 not null,
+    xu               bigint     default 0                 not null,
+    vin_total        bigint     default 0                 not null,
+    xu_total         bigint     default 0                 not null,
+    safe             bigint     default 0                 not null comment 'két sắt',
+    recharge_money   bigint     default 0                 not null,
+    vip_point        int        default 0                 not null,
+    vip_point_save   int        default 0                 not null,
+    money_vp         int        default 0                 not null,
+    dai_ly           tinyint(2) default 0                 not null,
+    status           int        default 0                 not null,
+    create_time      timestamp  default CURRENT_TIMESTAMP not null,
+    security_time    timestamp                            null,
+    login_otp        bigint     default -1                not null,
+    is_bot           tinyint(2) default 0                 not null,
+    update_pw_time   timestamp                            null,
+    client           varchar(20)                          null,
+    manual_quota     bigint                               null,
+    is_verify_mobile bit                                  null,
+    referral_code    varchar(128)                         null,
+    t_nap            bigint     default 0                 null,
+    t_rut            bigint     default 0                 null,
+    rut_times        int        default 0                 null,
+    nap_times        int        default 0                 null,
+    last_login       datetime                             null,
+    usertype         tinyint(2) default 0                 null,
+    telegram_id      varchar(100)                         null,
+    parrentUser      varchar(255)                         null,
+    constraint id_UNIQUE
+        unique (id),
+    constraint nick_name_UNIQUE
+        unique (nick_name),
+    constraint user_name_UNIQUE
+        unique (user_name)
+);
+
+create index referral_code_UNIQUE
+    on users (referral_code);
+
+create definer = root@`%` trigger TR_INSERT_ACCOUNT
+    after insert
+    on users
+    for each row
+begin
+
+   INSERT INTO tx_user
+     (ID,LOGIN,FULL_NAME,ACTIVATED,LANG_KEY,CREATED_BY,CREATED_DATE,MIN_AMOUNT,MAX_AMOUNT,TOTAL_WINAMOUNT) 
+       values (new.id,new.user_name,
+       new.nick_name, 
+       1, 
+       'vi', 
+       'auto_admin',
+       sysdate(),
+       1000,
+       100000000,
+       0);
+
+       insert into tx_user_authority (user_id , authority_name) values (new.id,'ROLE_USER');
+
+end;
+
+create table users_bank
+(
+    id            bigint auto_increment
+        primary key,
+    user_id       bigint       not null,
+    nick_name     varchar(128) not null,
+    bank_name     varchar(100) not null,
+    customer_name varchar(200) not null,
+    bank_number   varchar(50)  not null,
+    status        tinyint(1)   not null,
+    create_date   datetime     not null,
+    branch        varchar(150) null,
+    update_date   datetime     null on update CURRENT_TIMESTAMP,
+    last_editor   varchar(120) null
+);
+
+create table users_in_game
+(
+    id        int         not null
+        primary key,
+    user_id   bigint      null,
+    game_id   int         null,
+    num_total int         null,
+    num_win   int         null,
+    num_loss  int         null,
+    exp       varchar(45) null
+);
+
+create table users_vp_event
+(
+    user_id     int                                 not null
+        primary key,
+    nick_name   varchar(45)                         not null,
+    vp_real     int       default 0                 not null,
+    vp_event    int       default 0                 not null,
+    vp_add      int       default 0                 not null,
+    num_add     int       default 0                 not null,
+    vp_sub      int       default 0                 not null,
+    num_sub     int       default 0                 not null,
+    place       int       default 0                 not null,
+    place_max   int       default 0                 not null,
+    is_bot      int       default -1                not null,
+    update_time timestamp default CURRENT_TIMESTAMP not null,
+    constraint nick_name_UNIQUE
+        unique (nick_name)
+);
+
+create table utm_campain
+(
+    id           int auto_increment
+        primary key,
+    name         varchar(255) null,
+    name_display varchar(255) null
+);
+
+create table utm_medium
+(
+    id           int auto_increment
+        primary key,
+    name         varchar(255) null,
+    name_display varchar(255) null
+);
+
+create table utm_source
+(
+    id           int auto_increment
+        primary key,
+    name         varchar(255) null,
+    name_display varchar(255) null
+);
+
+create table wmuser
+(
+    wmid      varchar(100) not null comment 'user in wm'
+        primary key,
+    nick_name varchar(100) null,
+    username  varchar(100) null,
+    password  varchar(50)  null,
+    wmcountid bigint       null,
+    constraint nick_name
+        unique (nick_name)
+);
+
+create definer = root@`%` view v_log_user_play as
+select 1 AS `referral_code`,
+       1 AS `create_time`,
+       1 AS `id`,
+       1 AS `time_report`,
+       1 AS `nick_name`,
+       1 AS `wm`,
+       1 AS `wm_win`,
+       1 AS `ibc`,
+       1 AS `ibc_win`,
+       1 AS `ag`,
+       1 AS `ag_win`,
+       1 AS `tlmn`,
+       1 AS `tlmn_win`,
+       1 AS `bacay`,
+       1 AS `bacay_win`,
+       1 AS `xocdia`,
+       1 AS `xocdia_win`,
+       1 AS `minipoker`,
+       1 AS `minipoker_win`,
+       1 AS `slot_pokemon`,
+       1 AS `slot_pokemon_win`,
+       1 AS `baucua`,
+       1 AS `baucua_win`,
+       1 AS `taixiu`,
+       1 AS `taixiu_win`,
+       1 AS `caothap`,
+       1 AS `caothap_win`,
+       1 AS `slot_bitcoin`,
+       1 AS `slot_bitcoin_win`,
+       1 AS `slot_taydu`,
+       1 AS `slot_taydu_win`,
+       1 AS `slot_angrybird`,
+       1 AS `slot_angrybird_win`,
+       1 AS `slot_thantai`,
+       1 AS `slot_thantai_win`,
+       1 AS `slot_thethao`,
+       1 AS `slot_thethao_win`,
+       1 AS `deposit`,
+       1 AS `withdraw`,
+       1 AS `t_bonus`,
+       1 AS `cmd`,
+       1 AS `cmd_win`,
+       1 AS `t_refund`,
+       1 AS `code`,
+       1 AS `t_sport_bonus`,
+       1 AS `t_casino_bonus`,
+       1 AS `t_egame_bonus`,
+       1 AS `slot_chiemtinh`,
+       1 AS `slot_chiemtinh_win`,
+       1 AS `taixiu_st`,
+       1 AS `taixiu_st_win`,
+       1 AS `fish`,
+       1 AS `fish_win`;
+
+create
+    definer = root@`%` procedure SP_BuyPackMoon(IN _nickname varchar(45), IN _eventId int, OUT _amount bigint,
+                                                OUT _errCode int)
+SP:BEGIN
+  DECLARE eventId TINYINT DEFAULT 0; 
+  DECLARE _id, totalBonusMoon, totalPrices, price, gold, total BIGINT  DEFAULT 0;
+  SET _errCode = 0, _amount= 0;
+  
+  SELECT id INTO _id FROM users WHERE nick_name = _nickname;
+  SELECT amount INTO price FROM vinplay.event WHERE name like 'moon-night%' AND id = _eventId;
+  
+  IF _id = 0 THEN 
+	SET _errCode = -1;
+    SELECT _amount, _errCode;
+    LEAVE SP;
+  END IF;
+  
+  IF price = 0 THEN 
+	SET _errCode = -2;
+    SELECT _amount, _errCode;
+    LEAVE SP;
+  END IF;
+	
+	
+  SELECT count(*) INTO eventId FROM vinplay.user_bonus WHERE nick_name = _nickname AND bonus_type = _eventId;
+  
+  IF eventId > 0 THEN 
+		SET _errCode = 1;
+		SELECT _amount, _errCode;
+  ELSE 
+		
+    SELECT vin INTO gold FROM vinplay.users where nick_name = _nickname;
+		
+		SELECT COALESCE(SUM(b.amount), 0), COALESCE(SUM(e.amount), 0) INTO totalBonusMoon, totalPrices FROM vinplay.user_bonus b 
+    INNER JOIN vinplay.event e ON b.bonus_type = e.id 
+    WHERE b.nick_name = _nickname AND e.name like 'moon-night%';
+    
+    SET total = price + totalBonusMoon ; 
+    
+    IF gold < total THEN 
+        SET _errCode = 2;
+				SELECT _amount, _errCode;
+		ELSE 
+			SET _amount = price;
+					SELECT _amount, _errCode;
+    END IF;
+  END IF;
+END;
+
+create
+    definer = root@`%` procedure cursor_ROWPERROW()
+BEGIN
+	DECLARE
+		cursor_List_isdone BOOLEAN DEFAULT FALSE;
+	DECLARE
+		cursor_TABLE_NAME VARCHAR ( 250 ) DEFAULT '';
+	DECLARE
+		cursor_i CURSOR FOR SELECT
+		TABLE_NAME 
+	FROM
+		INFORMATION_SCHEMA.TABLES 
+	WHERE
+		TABLE_SCHEMA = 'vinplay';
+	DECLARE
+		CONTINUE HANDLER FOR NOT FOUND 
+		SET cursor_List_isdone = TRUE;
+	OPEN cursor_i;
+	loop_List :
+	LOOP
+			FETCH cursor_i INTO cursor_TABLE_NAME;
+		IF
+			cursor_List_isdone THEN
+				LEAVE loop_List;
+			
+		END IF;
+		
+		SET @str = concat( 'ALTER TABLE ', cursor_TABLE_NAME, " CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci" );
+		PREPARE stmt 
+		FROM
+			@str;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;
+		
+	END LOOP loop_List;
+	CLOSE cursor_i;
+	
+END;
+
+create
+    definer = root@`%` function fn_GetSumDepositByNickname(p_nickname varchar(128), p_createtime datetime, p_days int) returns int
+BEGIN
+	DECLARE result INT;
+	SET result = 0;
+	select SUM(deposit) into result from log_count_user_play where time_report >= p_createtime
+								and time_report <= DATE_ADD(p_createtime, INTERVAL p_days DAY)
+								and nick_name = p_nickname;
+	if result is null THEN
+		return 0;
+	else
+		return result;
+	END IF;
+END;
+
+create
+    definer = root@`%` procedure freeze_money(IN p_session_id varchar(100), IN p_user_id int,
+                                              IN p_game_name varchar(45), IN p_room_id varchar(100),
+                                              IN p_money_use bigint, IN p_money_total bigint,
+                                              IN p_money_exchange bigint, IN p_money_type varchar(5),
+                                              IN p_nick_name varchar(45))
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+	START TRANSACTION;
+		IF (p_money_type = 'vin') THEN
+			UPDATE users SET vin = p_money_use, vin_total = p_money_total  WHERE id = p_user_id;
+		ELSE 
+			UPDATE users SET xu = p_money_use, xu_total = p_money_total WHERE id = p_user_id;
+		END IF;
+		INSERT INTO freeze_money (`session_id`, `user_id`, `game_name`, `room_id`, `money`, `money_type`, `create_time`, `status`, `nick_name`)	VALUES (p_session_id, p_user_id, p_game_name, p_room_id, p_money_exchange, p_money_type, now(), 1, p_nick_name);
+	COMMIT;
+END;
+
+create
+    definer = root@`%` procedure getmembersvalidbyrefercode(IN p_refercode varchar(128), IN p_fromdate datetime,
+                                                            IN p_enddate datetime, IN p_amountmember int)
+BEGIN
+	if (p_refercode is null or p_refercode = '') THEN
+		select DISTINCT(nick_name) nickname,
+		(select count(time_report) FROM v_log_user_play where nick_name = nickname and time_report >= p_fromdate and time_report <= p_enddate) countactive
+		from v_log_user_play
+		HAVING countactive > p_amountmember;
+	else
+		select DISTINCT(nick_name) nickname,
+		(select count(time_report) FROM v_log_user_play where nick_name = nickname and time_report >= p_fromdate and time_report <= p_enddate and referral_code = p_refercode) countactive
+		from v_log_user_play
+		HAVING countactive > p_amountmember;
+	END IF;
+END;
+
+create
+    definer = root@`%` procedure insert_bot(IN p_un varchar(45), IN p_nn varchar(45), IN p_pw varchar(100),
+                                            IN p_vin bigint, IN p_xu bigint, IN p_status int)
+BEGIN
+	INSERT INTO users(user_name,nick_name,`password`,vin,vin_total,xu,xu_total,avatar,`status`,is_bot) VALUES(p_un,p_nn,p_pw,p_vin,p_vin,p_xu,p_xu,'0',p_status,1);
+    UPDATE money_system SET money = money - p_vin WHERE `name` = 'Vin_Bot'; 
+    UPDATE money_system SET money = money - p_xu WHERE `name` = 'Xu_Bot'; 
+END;
+
+create
+    definer = root@`%` procedure p_AG_GeneralCmdUser(IN p_cmdid varchar(100), IN p_username varchar(100),
+                                                     IN p_cmd_count_id int)
+BEGIN
+				 
+      INSERT INTO cmduser(cmdid,nick_name,cmd_username,cmd_countid) VALUES(p_cmdid,null,p_username,p_cmd_count_id);
+
+END;
+
+create
+    definer = root@`%` procedure p_AG_GeneralEbetUser(IN p_ebetid varchar(100), IN p_ebet_count_id int,
+                                                      IN p_password varchar(50))
+BEGIN
+				 
+      INSERT INTO ebetuser(ebetid,nick_name,ebetcountid,password) VALUES(p_ebetid,null,p_ebet_count_id,p_password);
+
+END;
+
+create
+    definer = root@`%` procedure p_AG_GeneralSboUser(IN p_sboid varchar(100), IN p_sbo_count_id int)
+BEGIN
+				 
+      INSERT INTO sbouser(sboid,nick_name,sbocountid) VALUES(p_sboid,null,p_sbo_count_id);
+
+END;
+
+create
+    definer = root@`%` procedure p_AG_GeneralWmUser(IN p_wmid varchar(100), IN p_username varchar(100),
+                                                    IN p_password varchar(100), IN p_wm_count_id int)
+BEGIN
+				 
+      INSERT INTO wmuser(wmid,nick_name,username,`password`,wmcountid) VALUES(p_wmid,null,p_username,p_password,p_wm_count_id);
+
+END;
+
+create
+    definer = root@`%` procedure p_AG_MappingEbetuser(IN p_loginname varchar(100), IN p_timestamps int(10))
+BEGIN
+	   DECLARE v_min_row INTEGER;
+	   DECLARE v_max_user_id INTEGER;
+	   DECLARE v_count INTEGER;
+	    
+     	SELECT COUNT(nick_name) INTO v_count FROM ebetuser WHERE nick_name=p_loginname;
+	     
+	     if(v_count=1)then
+					update ebetuser set timestamps = p_timestamps;
+					SELECT * FROM ebetuser WHERE nick_name=p_loginname;
+	     else
+					SELECT COUNT(ebetid) INTO v_max_user_id FROM ebetuser WHERE nick_name IS NULL;
+
+					SELECT MIN(ebetcountid) INTO v_min_row FROM ebetuser WHERE nick_name IS NULL;
+	     
+				 if(v_max_user_id!=0)then
+						UPDATE ebetuser SET nick_name=p_loginname , timestamps = p_timestamps WHERE ebetcountid=v_min_row;
+						commit;
+						SELECT * FROM ebetuser WHERE nick_name=p_loginname;
+				end if;
+	     end if;
+		 
+END;
+
+create
+    definer = root@`%` procedure p_AG_MappingSbouser(IN p_loginname varchar(100))
+BEGIN
+	   DECLARE v_min_row INTEGER;
+	   DECLARE v_max_user_id INTEGER;
+	   DECLARE v_count INTEGER;
+	    
+     	SELECT COUNT(nick_name) INTO v_count FROM sbouser WHERE nick_name=p_loginname;
+	     
+	     if(v_count=1)then
+	     
+					SELECT * FROM sbouser WHERE nick_name=p_loginname;
+	     else
+					SELECT COUNT(sboid) INTO v_max_user_id FROM sbouser WHERE nick_name IS NULL;
+
+					SELECT MIN(sbocountid) INTO v_min_row FROM sbouser WHERE nick_name IS NULL;
+	     
+				 if(v_max_user_id!=0)then
+						UPDATE sbouser SET nick_name=p_loginname WHERE sbocountid=v_min_row;
+						commit;
+						SELECT * FROM sbouser WHERE nick_name=p_loginname;
+				end if;
+	     end if;
+		 
+END;
+
+create
+    definer = root@`%` procedure p_AG_Mappingcmduser(IN p_loginname varchar(100))
+BEGIN
+	   DECLARE v_min_row INTEGER;
+	   DECLARE v_max_user_id INTEGER;
+	   DECLARE v_count INTEGER;
+	    
+     	SELECT COUNT(nick_name) INTO v_count FROM cmduser WHERE nick_name=p_loginname;
+	     
+	     if(v_count=1)then
+	     
+					SELECT * FROM cmduser WHERE nick_name=p_loginname;
+	     else
+					SELECT COUNT(cmdid) INTO v_max_user_id FROM cmduser WHERE nick_name IS NULL;
+
+					SELECT MIN(cmd_countid) INTO v_min_row FROM cmduser WHERE nick_name IS NULL;
+	     
+				 if(v_max_user_id!=0)then
+						UPDATE cmduser SET nick_name=p_loginname WHERE cmd_countid=v_min_row;
+						commit;
+						SELECT * FROM cmduser WHERE nick_name=p_loginname;
+				end if;
+	     end if;
+		 
+END;
+
+create
+    definer = root@`%` procedure p_AG_Mappingwmuser(IN p_loginname varchar(100))
+BEGIN
+	   DECLARE v_min_row INTEGER;
+	   DECLARE v_max_user_id INTEGER;
+	   DECLARE v_count INTEGER;
+	    
+     	SELECT COUNT(nick_name) INTO v_count FROM wmuser WHERE nick_name=p_loginname;
+	     
+	     if(v_count=1)then
+	     
+					SELECT * FROM wmuser WHERE nick_name=p_loginname;
+	     else
+					SELECT COUNT(wmid) INTO v_max_user_id FROM wmuser WHERE nick_name IS NULL;
+
+					SELECT MIN(wmcountid) INTO v_min_row FROM wmuser WHERE nick_name IS NULL;
+	     
+				 if(v_max_user_id!=0)then
+						UPDATE wmuser SET nick_name=p_loginname WHERE wmcountid=v_min_row;
+						commit;
+						SELECT * FROM wmuser WHERE nick_name=p_loginname;
+				end if;
+	     end if;
+		 
+END;
+
+create
+    definer = root@`%` procedure p_AG_MaxCmdUser(OUT p_max_row int, OUT p_max_user_id int)
+begin
+
+         
+         SELECT MAX(cmd_countid) INTO p_max_row FROM cmduser;
+         
+         SELECT COUNT(cmd_countid) INTO p_max_user_id FROM cmduser WHERE nick_name IS null;
+
+      END;
+
+create
+    definer = root@`%` procedure p_AG_MaxEbetUser(OUT p_max_row int, OUT p_max_user_id int)
+begin
+
+         SELECT MAX(ebetcountid) INTO p_max_row FROM ebetuser;
+         SELECT COUNT(ebetcountid) INTO p_max_user_id FROM ebetuser WHERE nick_name IS null;
+
+      END;
+
+create
+    definer = root@`%` procedure p_AG_MaxSboUser(OUT p_max_row int, OUT p_max_user_id int)
+begin
+
+         SELECT MAX(sbocountid) INTO p_max_row FROM sbouser;
+         SELECT COUNT(sbocountid) INTO p_max_user_id FROM sbouser WHERE nick_name IS null;
+
+      END;
+
+create
+    definer = root@`%` procedure p_AG_MaxWmUser(OUT p_max_row int, OUT p_max_user_id int)
+begin
+
+         
+         SELECT MAX(wmcountid) INTO p_max_row FROM wmuser;
+         
+         SELECT COUNT(wmcountid) INTO p_max_user_id FROM wmuser WHERE nick_name IS null;
+
+      END;
+
+create
+    definer = root@`%` procedure report_money_system(IN p_start_time varchar(19), IN p_end_time varchar(19))
+BEGIN
+	SELECT action_name, SUM(money_win) AS money_win, SUM(money_lost) AS money_lost, SUM(money_other) AS money_other, SUM(fee) AS fee
+	FROM vinplay.report_money_daily
+	WHERE date >= p_start_time
+	  AND date <= p_end_time
+	GROUP BY action_name;
+END;
+
+create
+    definer = root@`%` procedure report_money_vin(IN start_date date, IN end_date date)
+BEGIN
+	SELECT action_name, SUM(money_win) as total_win, SUM(money_lost) as total_lost, SUM(money_other) as total_other, SUM(fee) as total_fee
+	FROM (SELECT * FROM vinplay.report_money_daily WHERE `date` >= start_date AND `date` < end_date) as tbl
+	GROUP BY action_name;
+END;
+
+create
+    definer = root@`%` procedure reset_xu()
+BEGIN
+	UPDATE users SET xu=10000000, xu_total=10000000
+    WHERE is_bot = 0;
+END;
+
+create
+    definer = root@`%` procedure restore_money(IN p_session_id varchar(100), IN p_user_id int, IN p_money_use bigint,
+                                               IN p_money_total bigint, IN p_money_exchange bigint,
+                                               IN p_money_type varchar(5))
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+	START TRANSACTION;
+		IF (p_money_exchange > 0) THEN
+			IF (p_money_type = 'vin') THEN
+				UPDATE users SET vin = p_money_use, vin_total = p_money_total  WHERE id = p_user_id;
+			ELSE 
+				UPDATE users SET xu = p_money_use, xu_total = p_money_total WHERE id = p_user_id;
+			END IF;
+		END IF;
+		UPDATE freeze_money SET money = 0, `status`= 0 WHERE session_id= p_session_id AND user_id= p_user_id;
+	COMMIT;
+END;
+
+create
+    definer = root@`%` procedure safe_money(IN p_user_id int, IN p_money_use bigint, IN p_money_total bigint,
+                                            IN p_money_safe bigint)
+BEGIN
+	UPDATE users SET vin = p_money_use, vin_total = p_money_total, safe = p_money_safe WHERE id = p_user_id;
+END;
+
+create
+    definer = root@`%` procedure sp_GetSumDepositByNickname(IN p_nickname varchar(50), IN p_timereport datetime, IN p_days int)
+BEGIN
+    select SUM(deposit) from log_count_user_play where time_report >= p_timereport
+			and time_report <= DATE_ADD(p_timereport, INTERVAL p_days DAY)
+			and nick_name = p_nickname;
+END;
+
+create
+    definer = root@`%` procedure update_money_cache(IN p_user_id int, IN p_money_use bigint, IN p_money_total bigint,
+                                                    IN p_money_safe bigint, IN p_money_type varchar(5))
+BEGIN
+	IF (p_money_type = 'vin') THEN
+		UPDATE users SET vin = p_money_use, vin_total = p_money_total, safe = p_money_safe WHERE id = p_user_id;
+	ELSE 
+		UPDATE users SET xu = p_money_use, xu_total = p_money_total WHERE id = p_user_id;
+	END IF;
+END;
+
+create
+    definer = root@`%` procedure update_money_db(IN p_user_id int, IN p_money bigint, IN p_money_type varchar(5))
+BEGIN
+	IF (p_money_type = 'vin') THEN
+		UPDATE users SET vin = vin + p_money, vin_total = vin_total + p_money WHERE id = p_user_id;
+	ELSE 
+		UPDATE users SET xu = xu + p_money, xu_total = xu_total + p_money WHERE id = p_user_id;
+	END IF;
+END;
+
+create
+    definer = root@`%` procedure update_money_in_game(IN p_session_id varchar(100), IN p_user_id int,
+                                                      IN p_game_name varchar(45), IN p_money_use bigint,
+                                                      IN p_money_total bigint, IN p_money_freeze bigint,
+                                                      IN p_money_type varchar(5), IN p_fee bigint, IN p_money_vp int,
+                                                      IN p_vp int)
+BEGIN
+	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+	START TRANSACTION;
+		IF (p_money_type = 'vin') THEN
+			
+			UPDATE users SET vin = p_money_use, vin_total = p_money_total, vip_point = vip_point + p_vp, vip_point_save = vip_point_save + p_vp, money_vp = p_money_vp WHERE id = p_user_id;
+		ELSE 
+			
+		    UPDATE users SET  xu = p_money_use, xu_total = p_money_total WHERE id = p_user_id;
+		END IF;
+		
+		IF (p_money_freeze > -1) THEN
+			UPDATE freeze_money SET money = p_money_freeze WHERE session_id = p_session_id AND user_id = p_user_id AND `status` = 1;
+		END IF;
+        
+		
+			
+		
+	COMMIT;
+END;
+
+create
+    definer = root@`%` procedure update_money_user(IN p_user_id int, IN p_money bigint, IN p_money_use bigint,
+                                                   IN p_money_total bigint, IN p_money_type varchar(5), IN p_fee bigint,
+                                                   IN p_action_name varchar(45), IN p_money_vp int, IN p_vp int,
+                                                   IN p_type int)
+BEGIN
+	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+	START TRANSACTION;
+		IF (p_money_type = 'vin') THEN
+			
+			IF p_type = 2 THEN
+				IF p_vp >= 0 THEN
+					UPDATE users SET vin = p_money_use, vin_total = p_money_total, vip_point = vip_point + p_vp, vip_point_save = vip_point_save + p_vp, 					money_vp = p_money_vp WHERE id = p_user_id;
+				ELSE 
+					UPDATE users SET vin = p_money_use, vin_total = p_money_total, vip_point = 0 WHERE id = p_user_id;
+				END IF;
+				
+      ELSEIF p_type = 1 THEN
+				
+				UPDATE users SET vin = p_money_use, vin_total = p_money_total, recharge_money = recharge_money + p_money , nap_times=nap_times+1 ,								t_nap=t_nap +p_money  WHERE id = p_user_id;
+      ELSEIF p_type = 0 THEN
+				IF (p_action_name = 'REQUEST_CASHOUT' ) THEN
+					UPDATE users SET vin = p_money_use, vin_total = p_money_total , t_rut =t_rut+p_money,rut_times=rut_times+1  WHERE id = p_user_id;
+				ELSEIF 	(p_action_name = 'REFUND_RECHARGE' ) THEN
+					UPDATE users SET vin = p_money_use, vin_total = p_money_total , t_rut =t_rut-p_money,rut_times=rut_times-1  WHERE id = p_user_id;
+				ELSE
+					UPDATE users SET vin = p_money_use, vin_total = p_money_total WHERE id = p_user_id;
+				END IF;
+      ELSEIF p_type = 3 THEN
+				UPDATE users SET vin = p_money_use, vin_total = p_money_total WHERE id = p_user_id;
+                
+      END IF;
+		ELSE 
+			UPDATE users SET xu = p_money_use, xu_total = p_money_total WHERE id = p_user_id;
+			
+		END IF;
+        
+		
+			
+		
+	COMMIT;
+END;
+
+create
+    definer = root@`%` procedure update_user_info(IN p_user_id int, IN p_new varchar(100), IN p_type int)
+BEGIN
+	IF p_type = 1 THEN 
+		UPDATE users SET avatar = p_new WHERE id = p_user_id;
+    ELSEIF p_type = 2 THEN 
+		UPDATE users SET `password` = p_new WHERE id = p_user_id;
+    ELSEIF p_type = 3 THEN 
+		UPDATE users SET identification = p_new WHERE id = p_user_id;
+    ELSEIF p_type = 4 THEN 
+		UPDATE users SET mobile = p_new WHERE id = p_user_id;
+    ELSEIF p_type = 5 THEN 
+		UPDATE users SET email = p_new WHERE id = p_user_id;
+    ELSEIF p_type = 6 THEN 
+		UPDATE users SET nick_name = p_new WHERE id = p_user_id;
+	ELSEIF p_type = 7 THEN 
+		UPDATE users SET `status` = p_new WHERE id = p_user_id;
+	ELSEIF p_type = 8 THEN 
+		UPDATE users SET `status` = SUBSTRING_INDEX(p_new, ',', -1), `mobile` = SUBSTRING_INDEX(p_new, ',', 1) WHERE id = p_user_id;
+	ELSEIF p_type = 9 THEN 
+		INSERT INTO users(user_name, `password`, vin, vin_total, xu, xu_total, avatar) VALUES(SUBSTRING_INDEX(p_new, ',', 1), SUBSTRING_INDEX(p_new, ',', -1), 0, 0, 500000, 500000, '0');
+	ELSEIF p_type = 10 THEN 
+		INSERT INTO users(user_name, facebook_id, vin, vin_total, xu, xu_total, avatar) VALUES(CONCAT('FB_', UNIX_TIMESTAMP()), p_new, 0, 0, 500000, 500000, '0');        
+	ELSEIF p_type = 11 THEN 
+		INSERT INTO users(user_name, google_id, vin, vin_total, xu, xu_total, avatar) VALUES(CONCAT('GG_', UNIX_TIMESTAMP()), p_new, 0, 0, 500000, 500000, '0');       
+	ELSEIF p_type = 12 THEN 
+		UPDATE users SET login_otp = SUBSTRING_INDEX(p_new, ',', 1), `status` = SUBSTRING_INDEX(p_new, ',', -1) WHERE id = p_user_id;
+	ELSEIF p_type = 13 THEN 
+		UPDATE users SET `status` = p_new, security_time = CURRENT_TIMESTAMP WHERE id = p_user_id;
+    END IF;
+END;
+
+create
+    definer = root@`%` procedure update_vippoint(IN p_user_id int, IN p_money_vp int, IN p_vp int)
+BEGIN
+	UPDATE users SET vip_point = vip_point + p_vp, vip_point_save = vip_point_save + p_vp, money_vp = p_money_vp WHERE id = p_user_id;
+END;
+
+create
+    definer = root@`%` procedure update_vippoint_event(IN p_user_id int, IN p_name varchar(100), IN p_vp_1 int,
+                                                       IN p_vp_2 int, IN p_vp_3 int, IN p_place int, IN p_place_max int,
+                                                       IN p_tyoe_ud int, IN p_is_bot int)
+BEGIN
+	IF p_tyoe_ud = 0 THEN 
+		INSERT INTO users_vp_event (user_id, nick_name , vp_real, vp_event, place, place_max, is_bot, update_time) VALUES(p_user_id, p_name, p_vp_1, p_vp_2, p_place, p_place_max, p_is_bot, now()) ON DUPLICATE KEY UPDATE vp_real = p_vp_1, vp_event = p_vp_2, place = p_place, place_max = p_place_max, update_time = now();
+    ELSEIF p_tyoe_ud = 1 THEN 
+		UPDATE users_vp_event SET num_add = p_vp_1, vp_add = p_vp_2, vp_event = p_vp_3, place = p_place, place_max = p_place_max, update_time = now() WHERE user_id = p_user_id;
+    ELSEIF p_tyoe_ud = 2 THEN 
+		UPDATE users_vp_event SET num_sub = p_vp_1, vp_sub = p_vp_2, vp_event = p_vp_3, place = p_place, place_max = p_place_max, update_time = now() WHERE user_id = p_user_id;
+	ELSEIF p_tyoe_ud = 3 THEN 
+		UPDATE users_vp_event SET num_add = p_vp_1, update_time = now() WHERE user_id = p_user_id;
+        UPDATE event_vp SET `use` = `use` + 1, `update_time` = now() WHERE `value`= p_vp_2;
+    END IF;
+END;
+
+create
+    definer = root@`%` procedure user_wages_insert(IN in_date varchar(20))
+BEGIN
+	DECLARE p1 varchar(128) DEFAULT ''; 
+	DECLARE p2 varchar(128) DEFAULT ''; 
+	DECLARE p3 bigint(20) DEFAULT 0; 
+	
+	DECLARE n INT DEFAULT 0;
+	DECLARE i INT DEFAULT 0;
+	DECLARE nickname varchar(4000);
+	SELECT COUNT(*) from user_level INTO n;
+	SET i=0;
+	WHILE i<n DO
+		SELECT nick_name, parent_user INTO p1,p2 from user_level limit i,1;
+		
+		select IFNULL(ROUND(sum(wm+ibc+ag+tlmn+bacay+xocdia+minipoker+slot_pokemon+baucua+taixiu+caothap+slot_bitcoin+slot_taydu+
+		slot_angrybird+slot_thantai+slot_thethao+cmd+slot_chiemtinh+taixiu_st+fish+slot_thanbai+ebet+sbo+slot_bikini+
+		slot_galaxy)*(0.6/100)),0) into p3
+		from vinplay.log_report_user where (date(time_report)=in_date) 
+		and (nick_name=p1);
+		
+		if(p1 <> '' and p1 is not null) then
+			IF (NOT EXISTS(select * from vinplay.user_wages where date(created_at)=in_date and nick_name=p1 and parent_user=p2)) THEN
+				INSERT INTO vinplay.user_wages(nick_name,created_at,bonus,`status`,parent_user) VALUES (p1,in_date,p3,0,p2);
+			END IF;
+		END IF;
+		SET i = i + 1;
+	END WHILE;
+	select i;
+END;
+
+create
+    definer = root@`%` procedure usersbank_count(IN p_nickname varchar(128))
+BEGIN
+	SELECT count(id) as count from users_bank WHERE nick_name = p_nickname;
+END;
+
+create
+    definer = root@`%` procedure usersbank_deletebyid(IN p_id bigint)
+BEGIN
+	DELETE FROM users_bank WHERE id = p_id;
+END;
+
+create
+    definer = root@`%` procedure usersbank_getbybanknumber(IN p_nickname varchar(128), IN p_banknumber varchar(50))
+BEGIN
+	SELECT * from users_bank WHERE nick_name = p_nickname and bank_number = p_banknumber;
+END;
+
+create
+    definer = root@`%` procedure usersbank_getbycustomename(IN p_nickname varchar(128), IN p_customername varchar(200))
+BEGIN
+	SELECT * from users_bank WHERE customer_name = p_customername and nick_name = p_nickname;
+END;
+
+create
+    definer = root@`%` procedure usersbank_getbyid(IN p_id bigint)
+BEGIN
+	SELECT * from users_bank WHERE id = p_id;
+END;
+
+create
+    definer = root@`%` procedure usersbank_insert(IN p_userid bigint, IN p_nickname varchar(128),
+                                                  IN p_bankname varchar(100), IN p_customername varchar(200),
+                                                  IN p_banknumber varchar(50), IN p_status tinyint(1),
+                                                  IN p_branch varchar(150))
+BEGIN
+	INSERT INTO users_bank(user_id,nick_name,bank_name,customer_name,bank_number,`status`,create_date,branch,update_date) 
+	VALUES(p_userid,p_nickname,p_bankname,p_customername,p_banknumber,p_status,(SELECT NOW()),p_branch, (SELECT NOW()));
+	SELECT MAX(id) as id from users_bank;
+END;
+
+create
+    definer = root@`%` procedure usersbank_search(IN page_number int, IN size int, IN p_nickname varchar(128),
+                                                  IN p_bankname varchar(100), IN p_banknumber varchar(100),
+                                                  IN p_isadmin tinyint)
+BEGIN
+  declare num_start int;
+    declare num_end int;
+		SET size = IFNULL(size, 10);
+    set num_start = (page_number - 1) * size;
+    set num_end = page_number * size;
+		IF p_isadmin = 0 THEN
+			IF p_bankname = '' THEN
+					SELECT * from users_bank WHERE 
+						(case when (p_banknumber = '' or p_banknumber IS NULL) then nick_name = p_nickname
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name = p_nickname and bank_number = p_banknumber
+						end)
+						ORDER BY id asc;
+			ELSE
+					SELECT * from users_bank WHERE 
+						(case when (p_banknumber = '' or p_banknumber IS NULL) then nick_name = p_nickname
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name = p_nickname and bank_number = p_banknumber
+						end) AND bank_name = p_bankname
+						ORDER BY id asc;
+			END IF;
+		ELSE
+			IF p_bankname = '' THEN
+					SELECT * from users_bank WHERE
+						(case when ((p_nickname = '' or p_nickname IS NULL) and (p_banknumber = '' or p_banknumber IS NULL)) then (1=1)
+							 when (p_nickname <> '' and (p_banknumber = '' or p_banknumber IS NULL)) then nick_name like CONCAT('%', p_nickname, '%')
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name like CONCAT('%', p_nickname, '%') and bank_number = p_banknumber
+						end)
+						ORDER BY id asc
+						LIMIT num_start, num_end;
+			ELSE
+					SELECT * from users_bank WHERE 
+						(case when ((p_nickname = '' or p_nickname IS NULL) and (p_banknumber = '' or p_banknumber IS NULL)) then (1=1)
+							 when (p_nickname <> '' and (p_banknumber = '' or p_banknumber IS NULL)) then nick_name like CONCAT('%', p_nickname, '%')
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name like CONCAT('%', p_nickname, '%') and bank_number = p_banknumber
+						end)
+						AND bank_name = p_bankname
+						ORDER BY id asc
+						LIMIT num_start, num_end;
+			END IF;
+		END IF;
+END;
+
+create
+    definer = root@`%` procedure usersbank_search_1(IN page_number int, IN size int, IN p_nickname varchar(128),
+                                                    IN p_customerName varchar(128), IN p_bankname varchar(100),
+                                                    IN p_banknumber varchar(100), IN p_isadmin tinyint)
+BEGIN
+  declare num_start int;
+    declare num_end int;
+		SET size = IFNULL(size, 10);
+    set num_start = (page_number - 1) * size;
+    set num_end = page_number * size;
+		IF p_isadmin = 0 THEN
+			IF p_bankname = '' THEN
+					SELECT * from users_bank WHERE 
+						(case when (p_banknumber = '' or p_banknumber IS NULL) then nick_name = p_nickname
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name = p_nickname and bank_number = p_banknumber
+						end)
+						ORDER BY id asc;
+			ELSE
+					SELECT * from users_bank WHERE 
+						(case when (p_banknumber = '' or p_banknumber IS NULL) then nick_name = p_nickname
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name = p_nickname and bank_number = p_banknumber
+						end) AND bank_name = p_bankname
+						ORDER BY id asc;
+			END IF;
+		ELSE			
+					SELECT * from users_bank WHERE 1=1
+						AND nick_name like CONCAT('%', p_nickname, '%')
+						AND customer_name like CONCAT('%', p_customerName, '%')
+						AND bank_name like CONCAT('%', p_bankname, '%')
+						AND bank_number like CONCAT('%', p_banknumber, '%')
+					ORDER BY id asc
+					LIMIT num_start, num_end;
+		END IF;
+END;
+
+create
+    definer = root@`%` procedure usersbank_search_count(IN p_nickname varchar(128), IN p_bankname varchar(100),
+                                                        IN p_banknumber varchar(100), IN p_isadmin tinyint)
+BEGIN
+		IF p_isadmin = 0 or p_isadmin is NULL THEN
+			IF p_bankname = '' THEN
+					SELECT count(id) as count from users_bank WHERE 
+						(case when (p_banknumber = '' or p_banknumber IS NULL) then nick_name = p_nickname
+						 when (p_nickname <> '' and p_banknumber <> '') then nick_name = p_nickname and bank_number = p_banknumber
+						end)
+						ORDER BY nick_name asc;
+			ELSE
+					SELECT count(id) as count from users_bank WHERE 
+						(case when (p_banknumber = '' or p_banknumber IS NULL) then nick_name = p_nickname
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name = p_nickname and bank_number = p_banknumber
+						end) AND bank_name = p_bankname
+						ORDER BY nick_name asc;
+			END IF;
+		ELSE
+			IF p_bankname = '' THEN
+					SELECT count(id) as count from users_bank WHERE
+						(case when ((p_nickname = '' or p_nickname IS NULL) and (p_banknumber = '' or p_banknumber IS NULL)) then (1=1)
+							 when (p_nickname <> '' and (p_banknumber = '' or p_banknumber IS NULL)) then nick_name like CONCAT('%', p_nickname, '%')
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name like CONCAT('%', p_nickname, '%') and bank_number = p_banknumber
+						end)
+						ORDER BY nick_name asc;
+			ELSE
+					SELECT count(id) as count from users_bank WHERE 
+						(case when ((p_nickname = '' or p_nickname IS NULL) and (p_banknumber = '' or p_banknumber IS NULL)) then (1=1)
+							 when (p_nickname <> '' and (p_banknumber = '' or p_banknumber IS NULL)) then nick_name like CONCAT('%', p_nickname, '%')
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name like CONCAT('%', p_nickname, '%') and bank_number = p_banknumber
+						end)
+						AND bank_name = p_bankname
+						ORDER BY nick_name asc;
+			END IF;
+		END IF;
+END;
+
+create
+    definer = root@`%` procedure usersbank_search_count_1(IN p_nickname varchar(128), IN p_customerName varchar(128),
+                                                          IN p_bankname varchar(100), IN p_banknumber varchar(100),
+                                                          IN p_isadmin tinyint)
+BEGIN
+		IF p_isadmin = 0 or p_isadmin is NULL THEN
+			IF p_bankname = '' THEN
+					SELECT count(id) as count from users_bank WHERE 
+						(case when (p_banknumber = '' or p_banknumber IS NULL) then nick_name = p_nickname
+						 when (p_nickname <> '' and p_banknumber <> '') then nick_name = p_nickname and bank_number = p_banknumber
+						end)
+						ORDER BY nick_name asc;
+			ELSE
+					SELECT count(id) as count from users_bank WHERE 
+						(case when (p_banknumber = '' or p_banknumber IS NULL) then nick_name = p_nickname
+							 when (p_nickname <> '' and p_banknumber <> '') then nick_name = p_nickname and bank_number = p_banknumber
+						end) AND bank_name = p_bankname
+						ORDER BY nick_name asc;
+			END IF;
+		ELSE
+			SELECT count(id) as count from users_bank WHERE 1=1
+						AND nick_name like CONCAT('%', p_nickname, '%')
+						AND customer_name like CONCAT('%', p_customerName, '%')
+						AND bank_name like CONCAT('%', p_bankname, '%')
+						AND bank_number like CONCAT('%', p_banknumber, '%');
+		END IF;
+END;
+
+create
+    definer = root@`%` procedure usersbank_update(IN p_id bigint, IN p_userid bigint, IN p_nickname varchar(128),
+                                                  IN p_bankname varchar(100), IN p_customername varchar(200),
+                                                  IN p_banknumber varchar(50), IN p_status tinyint(1),
+                                                  IN p_branch varchar(150), IN p_last_editor varchar(150))
+BEGIN
+	UPDATE users_bank SET user_id = p_userid, nick_name = p_nickname, bank_name = p_bankname, customer_name = p_customername,
+	bank_number = p_banknumber, `status` = p_status, branch = p_branch, update_date = (SELECT NOW()), last_editor = p_last_editor	WHERE id = p_id;
+END;
+

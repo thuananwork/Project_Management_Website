@@ -1,0 +1,251 @@
+<html lang="vi-VN" class="mdl-js" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Language" content="vi-VN">
+
+    <script type="text/javascript">
+
+        var portal = {
+            "chat": {
+                "enabled": true,
+                "pollInterval": 5000,
+                "video": {},
+                "translations": {
+                    "server_unavailable": "It looks like the chat server is unavailable. Check your network connection.",
+                    "server_error_send": "Failed to send message. Reason: ",
+                    "server_error_send_error": "Error: "
+                },
+            },
+            "loggedIn": false,
+            "portalPath": "http://e-graduate.hutech.edu.vn/portal",
+            "loggedOutUrl": "http://e-graduate.hutech.edu.vn/portal",
+            "siteId": "!gateway",
+            "siteTitle": "elearning - &#272;&#7841;i H&#7885;c C&ocirc;ng Ngh&#7879; Tp.HCM",
+            "shortDescription": "",
+            "locale": "vi-VN",
+            "user": {
+                "id": "",
+                "eid": ""
+            },
+            "timeoutDialog": {
+                "enabled": true,
+                "seconds": 600
+            },
+            "toggle": {
+                "allowauto": true,
+                "tools": true,
+                "sitenav": false
+            }
+        };
+    </script>
+
+
+    <!-- this causes problems for layout needs investigating -->
+    <link href="/portal/styles/portalstyles.css" type="text/css" rel="stylesheet" media="all">
+    <link href="/library/js/portal.css" type="text/css" rel="stylesheet" media="all">
+    <link href="/library/js/jquery.cluetip.css" type="text/css" rel="stylesheet" media="all">
+
+
+    <title>E-LEARNING HUTECH : elearning - Đại Học Công Nghệ Tp.HCM : Trang Chủ</title>
+    <link href="/library/js/tool_base.css" type="text/css" rel="stylesheet" media="all">
+    <link href="/library/js/tool.css" type="text/css" rel="stylesheet" media="all">
+
+    <script type="text/javascript" src="/library/js/headscripts.js"></script>
+    <script type="text/javascript">var sakai = sakai || {};
+    sakai.editor = sakai.editor || {};
+    sakai.locale = sakai.locale || {};
+    sakai.locale.userCountry = 'VN';
+    sakai.locale.userLanguage = 'vi';
+    sakai.locale.userLocale = 'vi_VN';
+    sakai.editor.collectionId = '/user/null/';
+    sakai.editor.enableResourceSearch = false;</script>
+    <script type="text/javascript">var CKEDITOR_BASEPATH = 'library/editor/ckeditor/';
+    </script>
+    <script type="text/javascript" src="/editor/ckeditor.js"></script>
+    <script type="text/javascript" src="/library/editor/ckeditor.launch.js"></script>
+
+    <script type="text/javascript" src="/library/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/library/js/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="/library/js/trimpath-template-latest.js"></script>
+    <script type="text/javascript" src="/library/js/jquery.bgiframe.min.js"></script>
+    <script type="text/javascript" src="/library/js/jquery.cluetip.min.js"></script>
+    <script type="text/javascript" src="/portal/scripts/neoscripts.js"></script>
+    <script type="text/javascript" src="/library/js/jquery.pnotify.min.js"></script>
+    <script type="text/javascript" src="/library/js/jquery.qtip-latest.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="/library/js/jquery.qtip-latest.min.css">
+    <link href="/css/profile.css" type="text/css" rel="stylesheet" media="all">
+    <script type="text/javascript" src="/library/js/tutorial.js"></script>
+    <script type="text/javascript">
+        document.write('<!-- jquery version     +jQuery.fn.jquer    + -->\n');
+    </script>
+    <link rel="stylesheet" href="/css/project.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.5.0/js/swiper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+            crossorigin="anonymous"></script>
+</head>
+
+<body class="portalBody">
+<noscript>
+    <div id="portal_js_warn">Sakai works much better when JavaScript is enabled. Please enable JavaScript in your
+        Browser.
+    </div>
+</noscript>
+<script type="text/javascript">
+    var sakaiPortalWindow = "";
+    $(document).ready(function () {
+        setupSkipNav();
+    });
+
+    function togglePasswordFields(show) {
+        const passwordFields = document.querySelector('.password-fields');
+        passwordFields.style.display = show ? 'block' : 'none';
+    }
+</script>
+<div th:replace="/fragments/client/headermain :: headermain"></div>
+<div id="container">
+    <div th:fragment="sidebarClient" xmlns:th="http://www.thymeleaf.org"
+         xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+        <div class="divColor" id="toolMenuWrap">
+            <div id="worksiteLogo">
+            </div>
+            <h1 class="skip" id="totoolmenu">Công cụ bắt đầu ở đây </h1>
+            <div id="toolMenu" role="navigation" aria-label="Công cụ bắt đầu ở đây ">
+                <ul>
+                    <li>
+                        <a class="toolMenuLink " title="Trang Chủ"
+                           href="/"
+                           role="presentation">
+                            <span class="toolMenuIcon icon-sakai-iframe "> </span><span class="menuTitle">Trang
+                                        Chủ</span>
+                        </a>
+                    </li>
+                    <li class="selectedTool">
+                        <a class="toolMenuLink "
+                           aria-disabled="true"
+                           href="/project_registrations"
+                           title="Để truy cập vào một trang web bên ngoài trong trang web ">
+                            <span class="toolMenuIcon icon-sakai-iframe "></span><span class="menuTitle"> Đăng ký đồ án</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="toolMenuLink "
+                           href="/user/account/profile"
+                           title="For resetting guest user passwords">
+                            <span class="toolMenuIcon icon-sakai-resetpass "></span><span class="menuTitle">Thông tin cá nhân</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="toolMenuLink "
+                           href="/user/account/history"
+                           title="Để truy cập vào một trang web bên ngoài trong trang web ">
+                            <span class="toolMenuIcon icon-sakai-iframe "></span><span class="menuTitle">Đồ án của tôi</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="toolMenuLink "
+                           href="/user/account/weekly"
+                           title="Để truy cập vào một trang web bên ngoài trong trang web ">
+                            <span class="toolMenuIcon icon-sakai-iframe "></span><span class="menuTitle">Tiến độ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="toolMenuLink "
+                           href="/user/account/grade_weekly"
+                           title="Để truy cập vào một trang web bên ngoài trong trang web ">
+                            <span class="toolMenuIcon icon-sakai-iframe "></span><span class="menuTitle">Điểm tiến độ</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    <div id="togglebar">
+    </div>
+    <h1 class="skip" id="tocontent">Nội dung bắt đầu ở đây </h1>
+    <div id="content" role="main">
+        <div id="innercontent">
+            <div id="col1">
+                <div class="portletMainWrap">
+                    <div class="container">
+                        <body>
+                        <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+                            <div id="notification" class="notification" th:if="${error != null or success != null}">
+                                <p id="notificationMessage"
+                                   th:text="${error != null ? error : success}"
+                                   th:classappend="${error != null ? 'error' : 'success'}"
+                                   style="padding: 10px 20px; color: dodgerblue; border-radius: 5px; font-weight: bold;">
+                                </p>
+                            </div>
+                        </div>
+                        <div class="main-content" style="margin-top: 8px">
+                            <div class="full-width-bg">
+                                <h2 class="text-center mb-4">Danh Sách Đăng Ký Đồ Án</h2>
+                                <div class="table-responsive bg-white p-4 rounded shadow">
+                                    <table class="table table-striped table-bordered text-center mb-0">
+                                        <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên đề tài</th>
+                                            <th>Mô tả</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="registration : ${projects}">
+                                            <td th:text="${registration.projectId}"></td>
+                                            <td th:text="${registration.title}"></td>
+                                            <td th:text="${registration.description}"></td>
+                                            <td>
+                                                <a class="btn btn-primary"
+                                                   onclick="return confirmRegistration();"
+                                                   th:href="@{'/register?id=' + ${registration.projectId}}"
+                                                   style="background-color: #007bff; color: #ffffff; border: none; transition: background-color 0.3s ease;"
+                                                >Đăng ký</a>
+                                            </td>
+                                        </tr>
+                                        <tr th:each="i : ${#numbers.sequence(1, 10 - #lists.size(projects))}"
+                                            th:if="${#lists.size(projects) < 10}">
+                                            <td colspan="4" class="text-center text-muted" style="height: 52px;"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        </body>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--    <div>-->
+<!--        <div th:replace="/fragments/client/footermain :: footermain"></div>-->
+<!--    </div>-->
+</div>
+<div id="footer" role="contentinfo">
+    <div class="footerExtNav">
+        <ul id="footerLinks">
+            <li><span><a href="/portal/site/!gateway">Gateway</a></span></li>
+            <li><span><a href="/portal/pda">Mobile View</a></span></li>
+            <li><span><a href="http://www.sakaiproject.org/" target="_blank">The Sakai Project</a></span></li>
+        </ul>
+    </div>
+    <div id="footerInfo">
+        <a href="http://sakaiproject.org" target="_blank">
+            <img border="0" src="/library/image/sakai_powered.gif" alt="Powered by Sakai">
+        </a>
+    </div>
+    <div class="sakaiCopyrightInfo">Hệ Thống Đào Tạo Qua Mạng - Trường Đại Học Công Nghệ TP.HCM</div>
+    <div class="serviceInfo">E-LEARNING HUTECH - TRUNK - Sakai 10.7 (Kernel 10.7)</div>
+</div>
+</body>
+</html>

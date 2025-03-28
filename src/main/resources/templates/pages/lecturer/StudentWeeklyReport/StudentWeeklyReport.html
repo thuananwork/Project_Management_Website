@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/lecturer/style.css}"/>
+    <!-- Favicon -->
+    <link href="img/icons8-admin-settings-male-16.png" rel="icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <aside>
+        <div class="navbar-top">
+            <div class="profile">
+                <div class="info active">
+                    <h2>Chào mừng, </h2>
+                    <p class="text-muted"
+                       th:text="${authen_user.firstName + ' ' + (authen_user.lastName == null ? '' : authen_user.lastName)}"></p>
+                </div>
+            </div>
+            <div class="btn-close">
+                <span class="material-symbols-outlined"> close </span>
+            </div>
+        </div>
+
+        <div class="navbar-content">
+            <a th:href="@{/lecturer}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Trang chủ</h3>
+            </a>
+            <a th:href="@{/lecturer/confirm}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xác nhận đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/create_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Tạo báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/list_StudentWeeklyReport}" class="active">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xem báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/evaluation}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Báo cáo của sinh viên</h3>
+            </a>
+            <a th:href="@{/lecturer/projectGrade}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Đánh giá đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/profile}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Thông tin cá nhân</h3>
+            </a>
+            <a href="/perform_logout" class="logout">
+                <span class="material-symbols-outlined"> Logout </span>
+                <h3>Đăng xuất</h3>
+            </a>
+        </div>
+    </aside>
+    <main>
+        <h1 style="margin-bottom: 2rem">Giảng viên</h1>
+        <div >
+            <h1>Báo cáo theo tuần</h1>
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button th:each="week : ${weekNumbers}"
+                            class="tab-button"
+                            th:text="'Tuần ' + ${week}"
+                            th:onclick="|openTab(event, 'week${week}')|">
+                    </button>
+                </div>
+            </div>
+            <div th:each="week : ${weekNumbers}"
+                 th:id="'week' + ${week}"
+                 class="tab-content"
+                 th:classappend="${week == weekNumbers[0]} ? 'active-content' : ''">
+                <h2 th:text="'Báo cáo tuần ' + ${week}"></h2>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Đề Tài</th>
+                        <th>Mô tả</th>
+                        <th>Ngày bắt đầu</th>
+                        <th>Ngày kết thúc</th>
+                        <th>Điểm</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="report,iterStat : ${weeklyRequirement}" th:if="${report.weekNumber == week}">
+                        <td th:text="${iterStat.count}"></td>
+                        <td th:text="${report.project.title}"></td>
+                        <td th:text="${report.description}"></td>
+                        <td th:text="${report.startDate}"></td>
+                        <td th:text="${report.endDate}"></td>
+                        <td th:text="${report.endDate}"></td>
+                        <td >
+                            <a th:href="@{'/lecturer/edit_StudentWeeklyReport?id=' + ${report.requirementId}}">Sửa</a>
+                            <a th:href="@{'/lecturer/delete?id=' + ${report.requirementId}}"
+                               onclick="return confirm('Bạn có chắc chắn?')">Xóa</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div th:if="${weeklyRequirement.size() == 0}" class="no-data">
+                    <p>Không có báo cáo nào</p>
+                </div>
+            </div>
+        </div>
+        <!--        <div th:unless="${order_set.size() != 0}">No data</div>-->
+    </main>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    const statuses = document.querySelectorAll('.status')
+    statuses.forEach(status => {
+        if (status.innerText === 'Completed') {
+            status.style.color = '#41f1b6'
+        } else if (status.innerText === 'Waiting') {
+            status.style.color = '#eaa636'
+        } else {
+            status.style.color = '#fc515f'
+        }
+    });
+
+    function openTab(evt, tabId) {
+        let i, tabContent, tabButtons;
+
+        // Ẩn tất cả nội dung tab
+        tabContent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabContent.length; i++) {
+            tabContent[i].classList.remove("active-content");
+        }
+
+        // Xóa trạng thái active khỏi tất cả các nút
+        tabButtons = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tabButtons.length; i++) {
+            tabButtons[i].classList.remove("active");
+        }
+
+        // Hiển thị nội dung tab đã chọn và thêm class active
+        document.getElementById(tabId).classList.add("active-content");
+        evt.currentTarget.classList.add("active");
+    }
+</script>
+</body>
+</html>

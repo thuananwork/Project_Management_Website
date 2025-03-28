@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Giảng viên</title>
+    <link rel="stylesheet" th:href="@{/css/lecturer/style.css}"/>
+    <!-- Favicon -->
+    <link href="img/icons8-admin-settings-male-16.png" rel="icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <aside>
+        <div class="navbar-top">
+            <div class="profile">
+                <div class="info active">
+                    <h2>Chào mừng, </h2>
+                    <p class="text-muted"
+                       th:text="${authen_user.firstName + ' ' + (authen_user.lastName == null ? '' : authen_user.lastName)}"></p>
+                </div>
+            </div>
+            <div class="btn-close">
+                <span class="material-symbols-outlined"> close </span>
+            </div>
+        </div>
+
+        <div class="navbar-content">
+            <a th:href="@{/lecturer}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Trang chủ</h3>
+            </a>
+            <a th:href="@{/lecturer/confirm}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xác nhận đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/create_StudentWeeklyReport}" class="active">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Tạo báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/list_StudentWeeklyReport}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Xem báo cáo</h3>
+            </a>
+            <a th:href="@{/lecturer/evaluation}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Báo cáo của sinh viên</h3>
+            </a>
+            <a th:href="@{/lecturer/projectGrade}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Đánh giá đồ án</h3>
+            </a>
+            <a th:href="@{/lecturer/profile}">
+                <span class="material-symbols-outlined"> grid_view </span>
+                <h3>Thông tin cá nhân</h3>
+            </a>
+            <a href="/perform_logout" class="logout">
+                <span class="material-symbols-outlined">Logout </span>
+                <h3>Đăng xuất</h3>
+            </a>
+        </div>
+    </aside>
+    <main>
+        <div class="main-form-container">
+            <!-- Title -->
+            <h1>Tạo báo cáo cho sinh viên</h1>
+
+            <!-- Form -->
+            <form th:action="@{/lecturer/create-weekly-reports}" method="post">
+                <!-- Project Selection -->
+                <div class="mb-4">
+                    <label for="project" class="form-label">Tên đồ án</label>
+                    <select class="form-select" id="project" name="projectId" onchange="fetchWeeks()" required>
+                        <option value="" disabled selected>-- Chọn đồ án --</option>
+                        <th:block th:each="c : ${projects}">
+                            <option th:value="${c.projectId}" th:text="${c.getTitle()}"></option>
+                        </th:block>
+                    </select>
+                </div>
+                <div class="row mb-4">
+                    <div id="weeklyRequirementsContainer">
+                    </div>
+                </div>
+
+                <button type="submit">Tạo báo cáo</button>
+            </form>
+        </div>
+    </main>
+
+
+
+
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    const statuses = document.querySelectorAll('.status')
+    statuses.forEach(status => {
+        if (status.innerText === 'Completed') {
+            status.style.color = '#41f1b6'
+        } else if (status.innerText === 'Waiting') {
+            status.style.color = '#eaa636'
+        } else {
+            status.style.color = '#fc515f'
+        }
+    });
+
+    function fetchWeeks() {
+        const projectId = document.getElementById("project").value;
+        if (!projectId) return;
+
+        fetch(`/lecturer/get-weeks?projectId=${projectId}`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById("weeklyRequirementsContainer");
+                container.innerHTML = ""; // Xóa nội dung cũ
+
+                data.forEach((week, index) => {
+                    container.innerHTML += `
+                           <div class="week-container">
+                        <h3>Tuần ${index + 1} (${week.startDate} - ${week.endDate})</h3>
+                        <label for="description${index}">Yêu cầu:</label>
+                        <textarea id="description${index}" name="weeklyRequirements[${index}].description" required></textarea>
+                        <input type="hidden" name="weeklyRequirements[${index}].startDate" value="${week.startDate}">
+                        <input type="hidden" name="weeklyRequirements[${index}].endDate" value="${week.endDate}">
+                        <input type="hidden" name="weeklyRequirements[${index}].weekNumber" value="${index + 1}">
+                    </div>
+                        `;
+                });
+            })
+            .catch(error => console.error("Error fetching weeks:", error));
+    }
+</script>
+</body>
+</html>
